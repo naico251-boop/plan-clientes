@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14110d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Plan Clientes">
+<title>Plan de Clientes · La Bombilla</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#14110d;--surface:#1e1a15;--surface2:#29241d;--line:#3a332a;
+  --text:#f3ede4;--muted:#a39888;--accent:#ffc53d;--accent-ink:#1b1400;
+  --red:#ff6b5b;--orange:#ff9f43;--green:#5fd18b;--radius:14px;
+  --shadow:0 8px 30px rgba(0,0,0,.35);
+}
+@media (prefers-color-scheme: light){
+  :root{--bg:#faf7f2;--surface:#ffffff;--surface2:#f2ece2;--line:#e4dccf;
+  --text:#221c14;--muted:#7a6f60;--accent:#f0a500;--accent-ink:#1b1400;
+  --red:#d9412f;--orange:#d97706;--green:#1f9d57;--shadow:0 8px 30px rgba(60,40,10,.12)}
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;font-size:15px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+.app{max-width:760px;margin:0 auto;padding:0 16px calc(96px + env(safe-area-inset-bottom))}
+header.top{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;align-items:center;gap:10px;padding:14px 0 12px;padding-top:calc(14px + env(safe-area-inset-top))}
+.logo{width:34px;height:34px;border-radius:10px;background:var(--accent);display:grid;place-items:center;font-size:18px;flex:none;box-shadow:0 0 18px rgba(255,197,61,.35)}
+.top h1{font-size:18px;margin:0;font-weight:800;letter-spacing:-.02em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{background:var(--surface2);border:0;border-radius:10px;width:34px;height:34px;font-size:18px}
+.sync{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 10px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.dot.ok{background:var(--green)}.dot.err{background:var(--red)}.dot.sync{background:var(--accent);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.3}}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:4px 0 18px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px 8px;text-align:center}
+.stat b{display:block;font-size:22px;font-weight:800}
+.stat span{font-size:11px;color:var(--muted)}
+.stat.late b{color:var(--red)}.stat.today b{color:var(--accent)}
+
+h2.sec{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:22px 0 8px;display:flex;align-items:center;gap:8px}
+h2.sec .n{background:var(--surface2);border-radius:999px;padding:1px 8px;font-size:11px}
+h2.sec.late{color:var(--red)}
+
+.task{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px;margin-bottom:8px;border-left:4px solid var(--line)}
+.task.late{border-left-color:var(--red)}
+.task.soon{border-left-color:var(--orange)}
+.task.done{opacity:.55}
+.task.done .ttitle{text-decoration:line-through}
+.chk{flex:none;width:26px;height:26px;border-radius:8px;border:2px solid var(--muted);background:transparent;font-weight:800;color:var(--accent-ink);display:grid;place-items:center;padding:0}
+.task.done .chk{background:var(--green);border-color:var(--green)}
+.tbody{flex:1;min-width:0;cursor:pointer}
+.ttitle{font-weight:600;line-height:1.35;word-wrap:break-word}
+.tmeta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;font-size:12px;color:var(--muted);align-items:center}
+.task.late .due{color:var(--red);font-weight:600}
+.task.soon .due{color:var(--orange);font-weight:600}
+.chip{display:inline-flex;align-items:center;gap:5px;background:var(--surface2);border-radius:999px;padding:2px 9px;font-size:12px;color:var(--text)}
+.chip::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c,var(--accent))}
+.prio{background:rgba(255,107,91,.15);color:var(--red);border-radius:6px;padding:1px 7px;font-weight:600}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;cursor:pointer;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:var(--c)}
+.card h3{margin:4px 0 2px;font-size:16px}
+.card .sub{color:var(--muted);font-size:12px;min-height:16px}
+.bar{height:8px;background:var(--surface2);border-radius:99px;overflow:hidden;margin:12px 0 6px}
+.bar i{display:block;height:100%;background:var(--c,var(--accent));border-radius:99px;transition:width .3s}
+.card .row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.card .next{margin-top:10px;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .next b{color:var(--text);font-weight:600}
+.badge-late{color:var(--red);font-weight:700}
+
+.hero{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px;border-top:4px solid var(--c)}
+.hero .sub{color:var(--muted);font-size:13px}
+.hero .big{font-size:28px;font-weight:800}
+.tabs{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:14px}
+.tabs button{flex:1;border:0;background:transparent;padding:9px;border-radius:9px;font-weight:600;color:var(--muted)}
+.tabs button.on{background:var(--surface2);color:var(--text)}
+
+.quick{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.quick input[type=text]{flex:1 1 180px}
+input[type=text],input[type=date],input[type=url],input[type=password],select,textarea{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:11px 12px;width:100%;outline:none;min-width:0}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+.quick input[type=date]{flex:0 0 150px;width:150px}
+textarea{resize:vertical;min-height:90px;line-height:1.45}
+.btn{border:0;border-radius:10px;padding:11px 16px;font-weight:700;background:var(--surface2);color:var(--text)}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.danger{background:transparent;color:var(--red);border:1px solid var(--red)}
+.btn.ghost{background:transparent;border:1px solid var(--line)}
+.btn.sm{padding:7px 11px;font-size:13px}
+
+details.done-list summary{cursor:pointer;color:var(--muted);font-size:13px;margin:18px 0 8px;list-style:none}
+details.done-list summary::before{content:"▸ "}
+details.done-list[open] summary::before{content:"▾ "}
+
+.idea{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px;margin-bottom:8px}
+.idea p{margin:0 0 8px;line-height:1.45;white-space:pre-wrap;word-wrap:break-word}
+.idea .foot{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--muted)}
+.idea .foot .sp{flex:1}
+.st{border-radius:6px;padding:2px 8px;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.st.nueva{background:rgba(255,197,61,.18);color:var(--accent)}
+.st.desarrollo{background:rgba(95,160,255,.18);color:#6aa8ff}
+.st.convertida{background:rgba(95,209,139,.18);color:var(--green)}
+.st.descartada{background:var(--surface2);color:var(--muted)}
+.filters{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px}
+.filters button{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 12px;font-size:13px;color:var(--muted)}
+.filters button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+
+.info dl{display:grid;grid-template-columns:110px 1fr;gap:8px 12px;margin:0}
+.info dt{color:var(--muted);font-size:13px}
+.info dd{margin:0;word-wrap:break-word;white-space:pre-wrap}
+
+.empty{text-align:center;color:var(--muted);padding:34px 16px;border:1px dashed var(--line);border-radius:var(--radius);margin:10px 0}
+.empty .e{font-size:34px;margin-bottom:6px}
+
+nav.bottom{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
+nav.bottom .in{display:flex;max-width:760px;width:100%}
+nav.bottom button{flex:1;background:transparent;border:0;padding:10px 4px 12px;color:var(--muted);font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
+nav.bottom button .ic{font-size:20px;line-height:1}
+nav.bottom button.on{color:var(--accent)}
+nav.bottom .bdg{position:absolute;top:6px;left:calc(50% + 6px);background:var(--red);color:#fff;border-radius:99px;font-size:10px;padding:1px 6px}
+nav.bottom .spacer{flex:0 0 76px}
+
+.fab{position:fixed;z-index:25;left:50%;transform:translateX(-50%);bottom:calc(22px + env(safe-area-inset-bottom));width:62px;height:62px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:26px;box-shadow:0 6px 24px rgba(255,197,61,.45)}
+
+.overlay{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.55);display:none;align-items:flex-end;justify-content:center}
+.overlay.open{display:flex}
+.sheet{background:var(--surface);width:100%;max-width:600px;max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom));box-shadow:var(--shadow)}
+@media (min-width:700px){.overlay{align-items:center}.sheet{border-radius:20px}}
+.sheet h3{margin:0 0 14px;font-size:18px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px;font-weight:600}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.actions .sp{flex:1}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.swatches button{width:32px;height:32px;border-radius:50%;border:3px solid transparent}
+.swatches button.on{border-color:var(--text)}
+.seg{display:flex;gap:6px}
+.seg button{flex:1;border:1px solid var(--line);background:var(--surface2);border-radius:10px;padding:9px}
+.seg button.on{border-color:var(--accent);color:var(--accent);font-weight:700}
+
+.mic{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.micbtn{width:56px;height:56px;border-radius:50%;border:0;background:var(--surface2);font-size:24px;flex:none}
+.micbtn.rec{background:var(--red);color:#fff;animation:ring 1.2s infinite}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(255,107,91,.6)}100%{box-shadow:0 0 0 16px rgba(255,107,91,0)}}
+.mic .hint{font-size:13px;color:var(--muted);line-height:1.4}
+.detected{font-size:12px;color:var(--green);margin-top:5px;min-height:15px}
+
+.set{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.set h3{margin:0 0 6px;font-size:16px}
+.set p{color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 12px}
+pre.sql{background:var(--surface2);border-radius:10px;padding:12px;font-size:12px;overflow:auto;white-space:pre;margin:0 0 10px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(100px + env(safe-area-inset-bottom));background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;font-size:14px;z-index:60;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+.muted{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top" id="top"></header>
+  <main id="main"></main>
+</div>
+
+<button class="fab" id="fab" aria-label="Dictar idea" onclick="openIdea(null,null,true)">🎙️</button>
+
+<nav class="bottom"><div class="in">
+  <button data-v="hoy" onclick="go('hoy')"><span class="ic">☀️</span>Hoy<span class="bdg" id="bdgLate" hidden></span></button>
+  <button data-v="clientes" onclick="go('clientes')"><span class="ic">👥</span>Clientes</button>
+  <span class="spacer"></span>
+  <button data-v="ideas" onclick="go('ideas')"><span class="ic">💡</span>Ideas<span class="bdg" id="bdgIdeas" hidden></span></button>
+  <button data-v="ajustes" onclick="go('ajustes')"><span class="ic">⚙️</span>Ajustes</button>
+</div></nav>
+
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeSheet()"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+<input type="file" id="importFile" accept="application/json" hidden onchange="importJSON(this)">
+
+<script>
+/* ============ Datos ============ */
+const LS_KEY='lb_plan_clientes_v1', CFG_KEY='lb_plan_clientes_cfg';
+const TABLE='plan_clientes_estado', ROW_ID='principal';
+const COLORS=['#ffc53d','#ff6b5b','#5fd18b','#6aa8ff','#c08bff','#ff8fc7','#2ec4b6','#ff9f43'];
+const IDEA_ST={nueva:'Nueva',desarrollo:'En desarrollo',convertida:'Convertida',descartada:'Descartada'};
+
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+let S=loadLocal();
+let cfg=JSON.parse(lsGet(CFG_KEY)||'{}');
+let view={name:'hoy',clientId:null,tab:'plan',ideaFilter:'nueva',showArchived:false};
+let syncState={s:'local',msg:''};
+
+function loadLocal(){
+  try{const d=JSON.parse(lsGet(LS_KEY));if(d&&d.clients)return fix(d)}catch(e){}
+  return {clients:[],tasks:[],ideas:[],savedAt:0};
+}
+function fix(d){d.clients=d.clients||[];d.tasks=d.tasks||[];d.ideas=d.ideas||[];return d}
+function persistLocal(){lsSet(LS_KEY,JSON.stringify(S))}
+function save(){S.savedAt=Date.now();persistLocal();schedulePush();render()}
+
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clientById=id=>S.clients.find(c=>c.id===id);
+const activeClients=()=>S.clients.filter(c=>!c.archived).sort((a,b)=>a.name.localeCompare(b.name,'es'));
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+
+/* ============ Fechas ============ */
+function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+const todayStr=()=>ymd(new Date());
+function parseD(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
+function diffDays(s){return Math.round((parseD(s)-parseD(todayStr()))/86400000)}
+function dateLabel(s){
+  if(!s)return'Sin fecha';const n=diffDays(s);
+  if(n===0)return'Hoy';if(n===1)return'Mañana';if(n===-1)return'Ayer';
+  if(n<0)return`Hace ${-n} días`;
+  if(n<7)return cap(parseD(s).toLocaleDateString('es-CO',{weekday:'long'}));
+  return parseD(s).toLocaleDateString('es-CO',{day:'numeric',month:'short'});
+}
+function dueClass(t){if(t.done||!t.due)return'';const n=diffDays(t.due);if(n<0)return'late';if(n<=2)return'soon';return''}
+function shortDate(ts){return new Date(ts).toLocaleDateString('es-CO',{day:'numeric',month:'short'})}
+
+/* ============ Sincronización Supabase ============ */
+function sbReady(){return !!(cfg.url&&cfg.key)}
+function sbHeaders(){return{apikey:cfg.key,Authorization:'Bearer '+cfg.key,'Content-Type':'application/json'}}
+function setSync(s,msg=''){syncState={s,msg};renderTop()}
+let pushTimer=null;
+function schedulePush(){if(!sbReady())return;clearTimeout(pushTimer);setSync('sync');pushTimer=setTimeout(push,1200)}
+async function push(){
+  if(!sbReady())return;
+  try{
+    const r=await fetch(`${cfg.url}/rest/v1/${TABLE}`,{method:'POST',
+      headers:{...sbHeaders(),Prefer:'resolution=merge-duplicates,return=minimal'},
+      body:JSON.stringify([{id:ROW_ID,data:S,updated_at:new Date().toISOString()}])});
+    if(!r.ok)throw new Error('Error '+r.status+' '+(await r.text()).slice(0,120));
+    setSync('ok');
+  }catch(e){setSync('err',e.message)}
+}
+async function pull(){
+  if(!sbReady()){setSync('local');return}
+  setSync('sync');
+  try{
+    const r=await fetch(`${cfg.url}/rest/v1/${TABLE}?id=eq.${ROW_ID}&select=data`,{headers:sbHeaders()});
+    if(!r.ok)throw new Error('Error '+r.status+' '+(await r.text()).slice(0,120));
+    const rows=await r.json();
+    const remote=rows[0]&&rows[0].data;
+    if(remote&&(remote.savedAt||0)>(S.savedAt||0)){S=fix(remote);persistLocal();render();setSync('ok')}
+    else if(!remote||(S.savedAt||0)>(remote.savedAt||0)){await push()}
+    else setSync('ok');
+  }catch(e){setSync('err',e.message)}
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')pull()});
+setInterval(()=>{if(document.visibilityState==='visible'&&syncState.s!=='sync')pull()},60000);
+
+/* ============ Navegación ============ */
+function go(name,extra={}){view={...view,name,...extra};window.scrollTo(0,0);render()}
+function openClient(id){go('cliente',{clientId:id,tab:'plan'})}
+
+function render(){renderTop();renderMain();renderNav()}
+function renderTop(){
+  const titles={hoy:'Hoy',clientes:'Clientes',ideas:'Ideas',ajustes:'Ajustes'};
+  const c=view.name==='cliente'?clientById(view.clientId):null;
+  const left=c?`<button class="back" onclick="go('clientes')" aria-label="Volver">‹</button>`:`<div class="logo">💡</div>`;
+  const title=c?esc(c.name):titles[view.name];
+  const lbl={local:'Solo este equipo',ok:'Sincronizado',sync:'Guardando…',err:'Sin conexión'}[syncState.s];
+  $('#top').innerHTML=`${left}<h1>${title}</h1><div class="sync" title="${esc(syncState.msg)}" onclick="go('ajustes')"><span class="dot ${syncState.s}"></span>${lbl}</div>`;
+}
+function renderNav(){
+  document.querySelectorAll('nav.bottom button').forEach(b=>b.classList.toggle('on',b.dataset.v===view.name||(view.name==='cliente'&&b.dataset.v==='clientes')));
+  const late=pendingTasks().filter(t=>t.due&&diffDays(t.due)<0).length;
+  const bl=$('#bdgLate');bl.hidden=!late;bl.textContent=late;
+  const ni=S.ideas.filter(i=>i.status==='nueva').length;
+  const bi=$('#bdgIdeas');bi.hidden=!ni;bi.textContent=ni;
+}
+function renderMain(){
+  const m=$('#main');
+  if(view.name==='hoy')m.innerHTML=viewHoy();
+  else if(view.name==='clientes')m.innerHTML=viewClientes();
+  else if(view.name==='cliente'){const c=clientById(view.clientId);if(!c){view.name='clientes';return renderMain()}m.innerHTML=viewCliente(c)}
+  else if(view.name==='ideas')m.innerHTML=viewIdeas();
+  else if(view.name==='ajustes')m.innerHTML=viewAjustes();
+}
+
+/* ============ Tareas ============ */
+function pendingTasks(){return S.tasks.filter(t=>!t.done&&clientById(t.clientId)&&!clientById(t.clientId).archived)}
+function sortTasks(a,b){if(!a.due&&!b.due)return a.createdAt-b.createdAt;if(!a.due)return 1;if(!b.due)return-1;if(a.due!==b.due)return a.due<b.due?-1:1;return(b.priority==='alta')-(a.priority==='alta')}
+function taskRow(t,showClient=true){
+  const c=clientById(t.clientId);
+  return `<div class="task ${t.done?'done':''} ${dueClass(t)}">
+    <button class="chk" onclick="toggleTask('${t.id}')" aria-label="Marcar como hecha">${t.done?'✓':''}</button>
+    <div class="tbody" onclick="openTask('${t.id}')">
+      <div class="ttitle">${esc(t.title)}</div>
+      <div class="tmeta">${showClient&&c?`<span class="chip" style="--c:${c.color}">${esc(c.name)}</span>`:''}<span class="due">📅 ${dateLabel(t.due)}</span>${t.priority==='alta'?'<span class="prio">Alta</span>':''}${t.notes?'<span>📝</span>':''}</div>
+    </div></div>`;
+}
+function toggleTask(id){const t=S.tasks.find(x=>x.id===id);if(!t)return;t.done=!t.done;t.doneAt=t.done?Date.now():null;save();if(t.done)toast('✓ ¡Hecho!')}
+
+/* ============ Vista: Hoy ============ */
+function viewHoy(){
+  if(!activeClients().length)return `<div class="empty" style="margin-top:30px"><div class="e">👋</div><b>Empezá agregando tu primer cliente</b><br><br><button class="btn primary" onclick="openClientForm()">+ Nuevo cliente</button></div>`;
+  const p=pendingTasks().sort(sortTasks);
+  const late=p.filter(t=>t.due&&diffDays(t.due)<0);
+  const today=p.filter(t=>t.due&&diffDays(t.due)===0);
+  const week=p.filter(t=>t.due&&diffDays(t.due)>0&&diffDays(t.due)<=7);
+  const later=p.filter(t=>t.due&&diffDays(t.due)>7);
+  const nodate=p.filter(t=>!t.due);
+  const doneToday=S.tasks.filter(t=>t.done&&t.doneAt&&ymd(new Date(t.doneAt))===todayStr());
+  const ideasN=S.ideas.filter(i=>i.status==='nueva').length;
+  const sec=(title,list,cls='')=>list.length?`<h2 class="sec ${cls}">${title}<span class="n">${list.length}</span></h2>${list.map(t=>taskRow(t)).join('')}`:'';
+  let h=`<div class="stats">
+    <div class="stat late"><b>${late.length}</b><span>Vencidas</span></div>
+    <div class="stat today"><b>${today.length}</b><span>Hoy</span></div>
+    <div class="stat"><b>${week.length}</b><span>Semana</span></div>
+    <div class="stat" onclick="go('ideas',{ideaFilter:'nueva'})" style="cursor:pointer"><b>${ideasN}</b><span>Ideas nuevas</span></div></div>`;
+  if(!late.length&&!today.length)h+=`<div class="empty"><div class="e">🎉</div>Nada pendiente para hoy.${doneToday.length?`<br>Completaste ${doneToday.length} tarea${doneToday.length>1?'s':''} hoy.`:''}</div>`;
+  h+=sec('⚠️ Vencidas',late,'late')+sec('Hoy',today)+sec('Próximos 7 días',week)+sec('Más adelante',later)+sec('Sin fecha',nodate);
+  if(doneToday.length&&(late.length||today.length))h+=`<details class="done-list"><summary>Completadas hoy (${doneToday.length})</summary>${doneToday.map(t=>taskRow(t)).join('')}</details>`;
+  h+=`<div style="margin-top:18px"><button class="btn ghost" style="width:100%" onclick="openTask(null)">+ Nueva tarea</button></div>`;
+  return h;
+}
+
+/* ============ Vista: Clientes ============ */
+function clientStats(c){
+  const ts=S.tasks.filter(t=>t.clientId===c.id);const done=ts.filter(t=>t.done).length;
+  const pend=ts.filter(t=>!t.done).sort(sortTasks);
+  return{total:ts.length,done,pct:ts.length?Math.round(done/ts.length*100):0,next:pend[0],late:pend.filter(t=>t.due&&diffDays(t.due)<0).length,
+    ideas:S.ideas.filter(i=>i.clientId===c.id&&i.status==='nueva').length};
+}
+function clientCard(c){
+  const s=clientStats(c);
+  return `<div class="card" style="--c:${c.color}" onclick="openClient('${c.id}')">
+    <h3>${esc(c.name)}</h3><div class="sub">${esc([c.sector,c.service].filter(Boolean).join(' · '))}</div>
+    <div class="bar"><i style="width:${s.pct}%"></i></div>
+    <div class="row"><span>${s.done}/${s.total} tareas · ${s.pct}%</span>${s.late?`<span class="badge-late">${s.late} vencida${s.late>1?'s':''}</span>`:s.ideas?`<span>💡 ${s.ideas}</span>`:''}</div>
+    <div class="next">${s.next?`Próxima: <b>${esc(s.next.title)}</b> · ${dateLabel(s.next.due)}`:'Sin tareas pendientes'}</div></div>`;
+}
+function viewClientes(){
+  const act=activeClients();const arch=S.clients.filter(c=>c.archived);
+  let h=`<div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn primary" onclick="openClientForm()">+ Nuevo cliente</button></div>`;
+  h+=act.length?`<div class="cards">${act.map(clientCard).join('')}</div>`:`<div class="empty"><div class="e">👥</div>Todavía no tenés clientes.</div>`;
+  if(arch.length)h+=`<details class="done-list"><summary>Archivados (${arch.length})</summary><div class="cards">${arch.map(clientCard).join('')}</div></details>`;
+  return h;
+}
+
+/* ============ Vista: Detalle cliente ============ */
+function viewCliente(c){
+  const s=clientStats(c);
+  let h=`<div class="hero" style="--c:${c.color}">
+    <div class="sub">${esc([c.sector,c.service].filter(Boolean).join(' · ')||'Cliente')}${c.archived?' · <b>Archivado</b>':''}</div>
+    <div style="display:flex;align-items:baseline;gap:10px;margin-top:6px"><span class="big">${s.pct}%</span><span class="muted">${s.done} de ${s.total} tareas completadas</span></div>
+    <div class="bar"><i style="width:${s.pct}%"></i></div></div>
+  <div class="tabs">
+    ${['plan','ideas','info'].map(t=>`<button class="${view.tab===t?'on':''}" onclick="view.tab='${t}';render()">${{plan:'📋 Plan',ideas:'💡 Ideas',info:'ℹ️ Info'}[t]}</button>`).join('')}
+  </div>`;
+  if(view.tab==='plan'){
+    const ts=S.tasks.filter(t=>t.clientId===c.id);
+    const pend=ts.filter(t=>!t.done).sort(sortTasks);const done=ts.filter(t=>t.done).sort((a,b)=>(b.doneAt||0)-(a.doneAt||0));
+    h+=`<div class="quick"><input type="text" id="qTitle" placeholder="Nueva tarea…" onkeydown="if(event.key==='Enter')quickAdd('${c.id}')"><input type="date" id="qDate"><button class="btn primary" onclick="quickAdd('${c.id}')">Agregar</button></div>`;
+    h+=pend.length?pend.map(t=>taskRow(t,false)).join(''):`<div class="empty"><div class="e">📋</div>Sin tareas pendientes. Agregá la primera arriba.</div>`;
+    if(done.length)h+=`<details class="done-list"><summary>Completadas (${done.length})</summary>${done.map(t=>taskRow(t,false)).join('')}</details>`;
+  }else if(view.tab==='ideas'){
+    const ids=S.ideas.filter(i=>i.clientId===c.id).sort((a,b)=>b.createdAt-a.createdAt);
+    h+=`<button class="btn primary" style="width:100%;margin-bottom:12px" onclick="openIdea('${c.id}',null,false)">🎙️ Nueva idea para ${esc(c.name)}</button>`;
+    h+=ids.length?ids.map(i=>ideaCard(i,false)).join(''):`<div class="empty"><div class="e">💡</div>Aún no hay ideas para este cliente.</div>`;
+  }else{
+    const f=(k,v)=>v?`<dt>${k}</dt><dd>${esc(v)}</dd>`:'';
+    h+=`<div class="set info"><dl>${f('Nombre',c.name)}${f('Nombre corto',c.alias)}${f('Sector',c.sector)}${f('Servicio',c.service)}${f('Contacto',c.contact)}${f('Inicio',c.start?parseD(c.start).toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric'}):'')}${f('Notas',c.notes)}</dl></div>
+    <div class="actions"><button class="btn primary" onclick="openClientForm('${c.id}')">Editar</button><button class="btn ghost" onclick="archiveClient('${c.id}')">${c.archived?'Reactivar':'Archivar'}</button><span class="sp"></span><button class="btn danger" onclick="deleteClient('${c.id}')">Eliminar</button></div>`;
+  }
+  return h;
+}
+function quickAdd(cid){
+  const title=$('#qTitle').value.trim();if(!title){$('#qTitle').focus();return}
+  S.tasks.push({id:uid(),clientId:cid,title,due:$('#qDate').value||'',priority:'normal',done:false,notes:'',createdAt:Date.now()});
+  save();setTimeout(()=>{const q=$('#qTitle');if(q)q.focus()},50);
+}
+
+/* ============ Vista: Ideas ============ */
+function ideaCard(i,showClient=true){
+  const c=clientById(i.clientId);
+  return `<div class="idea"><p>${esc(i.text)}</p><div class="foot">
+    ${showClient?(c?`<span class="chip" style="--c:${c.color}">${esc(c.name)}</span>`:'<span class="chip">Sin cliente</span>'):''}
+    <span class="st ${i.status}">${IDEA_ST[i.status]}</span><span>${shortDate(i.createdAt)}</span><span class="sp"></span>
+    ${i.status!=='convertida'?`<button class="btn sm primary" onclick="ideaToTask('${i.id}')">→ Tarea</button>`:''}
+    <button class="btn sm ghost" onclick="openIdea(null,'${i.id}',false)">Editar</button></div></div>`;
+}
+function viewIdeas(){
+  const cnt=k=>S.ideas.filter(i=>k==='todas'||i.status===k).length;
+  let h=`<div class="filters">${['nueva','desarrollo','convertida','descartada','todas'].map(k=>`<button class="${view.ideaFilter===k?'on':''}" onclick="view.ideaFilter='${k}';render()">${k==='todas'?'Todas':IDEA_ST[k]} (${cnt(k)})</button>`).join('')}</div>`;
+  const list=S.ideas.filter(i=>view.ideaFilter==='todas'||i.status===view.ideaFilter).sort((a,b)=>b.createdAt-a.createdAt);
+  h+=list.length?list.map(i=>ideaCard(i)).join(''):`<div class="empty"><div class="e">💡</div>No hay ideas aquí.<br>Tocá el 🎙️ y decí, por ejemplo:<br><i>“Idea para [cliente]: …”</i></div>`;
+  return h;
+}
+
+/* ============ Vista: Ajustes ============ */
+const SQL=`create table if not exists plan_clientes_estado (
+  id text primary key,
+  data jsonb not null,
+  updated_at timestamptz default now()
+);
+alter table plan_clientes_estado enable row level security;
+create policy "plan_clientes_anon" on plan_clientes_estado
+  for all to anon using (true) with check (true);`;
+function viewAjustes(){
+  return `<div class="set"><h3>☁️ Sincronización con Supabase</h3>
+    <p>Así ves lo mismo en el celular y en el computador. Sin esto, los datos quedan solo en este dispositivo.</p>
+    <div class="field"><label>URL del proyecto</label><input type="url" id="cfgUrl" value="${esc(cfg.url||'https://komlqdnxndacimlrdxhq.supabase.co')}"></div>
+    <div class="field"><label>Anon key (pública)</label><input type="password" id="cfgKey" value="${esc(cfg.key||'')}" placeholder="eyJhbGciOi…"></div>
+    <div class="actions" style="margin-top:4px"><button class="btn primary" onclick="saveCfg()">Guardar y conectar</button>${sbReady()?`<button class="btn ghost" onclick="pull()">Sincronizar ahora</button><button class="btn danger" onclick="clearCfg()">Desconectar</button>`:''}</div>
+    ${syncState.s==='err'?`<p style="color:var(--red);margin-top:10px">${esc(syncState.msg)}</p>`:''}</div>
+  <div class="set"><h3>🗄️ Tabla necesaria (una sola vez)</h3>
+    <p>Pegá esto en Supabase → SQL Editor → Run.</p><pre class="sql">${esc(SQL)}</pre>
+    <button class="btn sm ghost" onclick="copySQL()">Copiar SQL</button></div>
+  <div class="set"><h3>💾 Respaldo</h3><p>Descargá una copia de todo o restaurá un respaldo anterior.</p>
+    <div class="actions" style="margin-top:0"><button class="btn ghost" onclick="exportJSON()">Exportar</button><button class="btn ghost" onclick="$('#importFile').click()">Importar</button></div></div>
+  <p class="muted" style="text-align:center;font-size:12px;margin-top:20px">Plan de Clientes · La Bombilla · v1<br>${S.clients.length} clientes · ${S.tasks.length} tareas · ${S.ideas.length} ideas</p>`;
+}
+function saveCfg(){
+  let url=$('#cfgUrl').value.trim().replace(/\/+$/,'');const key=$('#cfgKey').value.trim();
+  if(url&&!/^https?:\/\//.test(url))url=`https://${url}.supabase.co`;
+  if(!url||!key){toast('Falta la URL o la key');return}
+  cfg={url,key};lsSet(CFG_KEY,JSON.stringify(cfg));toast('Conectando…');pull().then(()=>render());
+}
+function clearCfg(){if(!confirm('¿Desconectar la sincronización? Los datos siguen en este equipo.'))return;cfg={};lsSet(CFG_KEY,'{}');setSync('local');render()}
+function copySQL(){navigator.clipboard?.writeText(SQL).then(()=>toast('SQL copiado'),()=>toast('No se pudo copiar'))}
+function exportJSON(){
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:'application/json'}));
+  a.download=`plan-clientes-${todayStr()}.json`;a.click();
+}
+function importJSON(inp){
+  const f=inp.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.clients)throw 0;if(!confirm('Esto reemplaza todos los datos actuales. ¿Continuar?'))return;S=fix(d);save();toast('Respaldo restaurado')}catch(e){toast('Archivo no válido')}inp.value=''};
+  r.readAsText(f);
+}
+
+/* ============ Hojas / formularios ============ */
+function openSheet(html){$('#sheet').innerHTML=html;$('#overlay').classList.add('open')}
+function closeSheet(){stopRec();$('#overlay').classList.remove('open')}
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800)}
+function clientOptions(sel,allowNone){return (allowNone?`<option value="">— Sin cliente —</option>`:'')+activeClients().map(c=>`<option value="${c.id}" ${c.id===sel?'selected':''}>${esc(c.name)}</option>`).join('')}
+
+/* Cliente */
+let formColor=COLORS[0];
+function openClientForm(id){
+  const c=id?clientById(id):{name:'',alias:'',sector:'',service:'',contact:'',start:todayStr(),notes:'',color:COLORS[S.clients.length%COLORS.length]};
+  formColor=c.color;
+  openSheet(`<h3>${id?'Editar cliente':'Nuevo cliente'}</h3>
+    <div class="field"><label>Nombre *</label><input type="text" id="cName" value="${esc(c.name)}" placeholder="Ej: Casa del Ser"></div>
+    <div class="field"><label>Nombre corto (para el dictado)</label><input type="text" id="cAlias" value="${esc(c.alias)}" placeholder="Ej: Casa"></div>
+    <div class="two"><div class="field"><label>Sector</label><input type="text" id="cSector" value="${esc(c.sector)}" placeholder="Bienestar"></div>
+    <div class="field"><label>Fecha de inicio</label><input type="date" id="cStart" value="${esc(c.start)}"></div></div>
+    <div class="field"><label>Servicio contratado</label><input type="text" id="cService" value="${esc(c.service)}" placeholder="Contenido + Meta Ads"></div>
+    <div class="field"><label>Contacto</label><input type="text" id="cContact" value="${esc(c.contact)}" placeholder="Nombre · WhatsApp"></div>
+    <div class="field"><label>Color</label><div class="swatches" id="sw">${COLORS.map(k=>`<button style="background:${k}" class="${k===c.color?'on':''}" onclick="pickColor('${k}')"></button>`).join('')}</div></div>
+    <div class="field"><label>Notas</label><textarea id="cNotes" placeholder="Accesos, links, brief…">${esc(c.notes)}</textarea></div>
+    <div class="actions"><button class="btn ghost" onclick="closeSheet()">Cancelar</button><span class="sp"></span><button class="btn primary" onclick="saveClient('${id||''}')">Guardar</button></div>`);
+  setTimeout(()=>$('#cName').focus(),80);
+}
+function pickColor(k){formColor=k;document.querySelectorAll('#sw button').forEach(b=>b.classList.toggle('on',b.style.background&&b.getAttribute('onclick').includes(k)))}
+function saveClient(id){
+  const name=$('#cName').value.trim();if(!name){toast('Poné un nombre');return}
+  const data={name,alias:$('#cAlias').value.trim(),sector:$('#cSector').value.trim(),service:$('#cService').value.trim(),contact:$('#cContact').value.trim(),start:$('#cStart').value,notes:$('#cNotes').value.trim(),color:formColor};
+  if(id)Object.assign(clientById(id),data);
+  else{const c={id:uid(),createdAt:Date.now(),archived:false,...data};S.clients.push(c);view={...view,name:'cliente',clientId:c.id,tab:'plan'}}
+  closeSheet();save();
+}
+function archiveClient(id){const c=clientById(id);c.archived=!c.archived;save();toast(c.archived?'Cliente archivado':'Cliente reactivado')}
+function deleteClient(id){
+  const c=clientById(id);if(!confirm(`¿Eliminar "${c.name}" con todas sus tareas e ideas? No se puede deshacer.`))return;
+  S.clients=S.clients.filter(x=>x.id!==id);S.tasks=S.tasks.filter(t=>t.clientId!==id);S.ideas=S.ideas.filter(i=>i.clientId!==id);
+  view.name='clientes';save();
+}
+
+/* Tarea */
+let formPrio='normal';
+function openTask(id,preset){
+  if(!activeClients().length){toast('Primero creá un cliente');return}
+  const t=id?S.tasks.find(x=>x.id===id):{title:'',clientId:view.name==='cliente'?view.clientId:activeClients()[0].id,due:todayStr(),priority:'normal',notes:'',...(preset||{})};
+  formPrio=t.priority||'normal';
+  openSheet(`<h3>${id?'Editar tarea':'Nueva tarea'}</h3>
+    <div class="field"><label>Tarea *</label><textarea id="tTitle" style="min-height:60px">${esc(t.title)}</textarea></div>
+    <div class="two"><div class="field"><label>Cliente</label><select id="tClient">${clientOptions(t.clientId)}</select></div>
+    <div class="field"><label>Fecha</label><input type="date" id="tDue" value="${esc(t.due)}"></div></div>
+    <div class="field"><label>Prioridad</label><div class="seg" id="prio"><button class="${formPrio==='normal'?'on':''}" onclick="setPrio('normal')">Normal</button><button class="${formPrio==='alta'?'on':''}" onclick="setPrio('alta')">🔥 Alta</button></div></div>
+    <div class="field"><label>Notas</label><textarea id="tNotes">${esc(t.notes)}</textarea></div>
+    <div class="actions">${id?`<button class="btn danger" onclick="deleteTask('${id}')">Eliminar</button>`:`<button class="btn ghost" onclick="closeSheet()">Cancelar</button>`}<span class="sp"></span><button class="btn primary" onclick="saveTask('${id||''}','${(preset&&preset.fromIdea)||''}')">Guardar</button></div>`);
+  if(!id)setTimeout(()=>$('#tTitle').focus(),80);
+}
+function setPrio(p){formPrio=p;document.querySelectorAll('#prio button').forEach((b,i)=>b.classList.toggle('on',(i===0&&p==='normal')||(i===1&&p==='alta')))}
+function saveTask(id,fromIdea){
+  const title=$('#tTitle').value.trim();if(!title){toast('Escribí la tarea');return}
+  const data={title,clientId:$('#tClient').value,due:$('#tDue').value,priority:formPrio,notes:$('#tNotes').value.trim()};
+  if(id)Object.assign(S.tasks.find(t=>t.id===id),data);
+  else{const t={id:uid(),done:false,createdAt:Date.now(),...data};S.tasks.push(t);
+    if(fromIdea){const i=S.ideas.find(x=>x.id===fromIdea);if(i){i.status='convertida';i.taskId=t.id;if(!i.clientId)i.clientId=data.clientId}}}
+  closeSheet();save();toast(fromIdea?'Idea convertida en tarea':'Tarea guardada');
+}
+function deleteTask(id){if(!confirm('¿Eliminar esta tarea?'))return;S.tasks=S.tasks.filter(t=>t.id!==id);closeSheet();save()}
+function ideaToTask(iid){const i=S.ideas.find(x=>x.id===iid);openTask(null,{title:i.text.length>140?i.text.slice(0,140)+'…':i.text,clientId:i.clientId||activeClients()[0]?.id,notes:i.text.length>140?i.text:'',fromIdea:i.id})}
+
+/* ============ Ideas + dictado ============ */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let rec=null,recBase='',clientTouched=false;
+function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9ñ ]/g,' ').replace(/\s+/g,' ').trim()}
+function detectClient(text){
+  const n=' '+norm(text)+' ';let best=null,len=0;
+  for(const c of activeClients())for(const k of [c.name,c.alias]){const kn=norm(k);if(kn.length>=3&&n.includes(' '+kn+' ')&&kn.length>len){best=c;len=kn.length}}
+  return best;
+}
+function cleanIdea(text,c){
+  let t=text.trim().replace(/^(agrega(r|le)?|añade|añadir|anota|anotar|guarda|guardar|nueva)?\s*(esta|una|la)?\s*idea\s*(para|a|de|del|al)?\s*(el\s+)?(cliente\s+)?/i,'');
+  if(c&&t!==text.trim()){for(const k of [c.name,c.alias].filter(Boolean).sort((a,b)=>b.length-a.length)){if(norm(t.slice(0,k.length))===norm(k)){t=t.slice(k.length);break}}}
+  t=t.replace(/^[\s:,.\-–—]+/,'').replace(/^que\s+/i,'');
+  return t?t.charAt(0).toUpperCase()+t.slice(1):text.trim();
+}
+function openIdea(prefClient,ideaId,autoRec){
+  const i=ideaId?S.ideas.find(x=>x.id===ideaId):{text:'',clientId:prefClient||'',status:'nueva'};
+  clientTouched=!!(prefClient||ideaId);
+  openSheet(`<h3>${ideaId?'Editar idea':'💡 Nueva idea'}</h3>
+    ${!ideaId?`<div class="mic"><button class="micbtn" id="micBtn" onclick="toggleRec()">🎙️</button><div class="hint" id="micHint">${SR?'Tocá y decí, por ejemplo: <i>“Idea para Casa del Ser: hacer reels con testimonios”</i>':'El dictado directo no está disponible en este navegador. Usá el 🎤 del teclado para dictar.'}</div></div>`:''}
+    <div class="field"><textarea id="ideaText" placeholder="Escribí o dictá tu idea…" oninput="autoDetect()">${esc(i.text)}</textarea></div>
+    <div class="field"><label>Cliente</label><select id="ideaClient" onchange="clientTouched=true">${clientOptions(i.clientId,true)}</select><div class="detected" id="detected"></div></div>
+    ${ideaId?`<div class="field"><label>Estado</label><select id="ideaStatus">${Object.entries(IDEA_ST).map(([k,v])=>`<option value="${k}" ${k===i.status?'selected':''}>${v}</option>`).join('')}</select></div>`:''}
+    <div class="actions">${ideaId?`<button class="btn danger" onclick="deleteIdea('${ideaId}')">Eliminar</button>`:`<button class="btn ghost" onclick="closeSheet()">Cancelar</button>`}<span class="sp"></span><button class="btn primary" onclick="saveIdea('${ideaId||''}')">Guardar idea</button></div>`);
+  if(autoRec&&SR)setTimeout(startRec,150);else if(!ideaId)setTimeout(()=>$('#ideaText').focus(),80);
+}
+function autoDetect(){
+  const txt=$('#ideaText').value;const c=detectClient(txt);const d=$('#detected');
+  if(c&&!clientTouched){$('#ideaClient').value=c.id;d.textContent='✓ Cliente detectado: '+c.name}
+  else if(!c&&!clientTouched)d.textContent='';
+}
+function toggleRec(){rec?stopRec():startRec()}
+function startRec(){
+  if(!SR)return;
+  try{
+    rec=new SR();rec.lang='es-CO';rec.interimResults=true;rec.continuous=true;
+    const ta=$('#ideaText');recBase=ta.value?ta.value.trim()+' ':'';
+    rec.onresult=e=>{let s='';for(let k=0;k<e.results.length;k++)s+=e.results[k][0].transcript;ta.value=recBase+s.trim();autoDetect()};
+    rec.onerror=e=>{const h=$('#micHint');if(h)h.innerHTML=e.error==='not-allowed'?'Permiso de micrófono denegado. Activalo en el navegador o usá el 🎤 del teclado.':'No te escuché bien. Probá de nuevo o escribí la idea.'};
+    rec.onend=()=>{rec=null;const b=$('#micBtn');if(b){b.classList.remove('rec');b.textContent='🎙️'}};
+    rec.start();const b=$('#micBtn');b.classList.add('rec');b.textContent='⏹';$('#micHint').textContent='Escuchando… tocá para terminar.';
+  }catch(e){rec=null}
+}
+function stopRec(){if(rec){try{rec.stop()}catch(e){}rec=null}}
+function saveIdea(id){
+  stopRec();
+  const raw=$('#ideaText').value.trim();if(!raw){toast('La idea está vacía');return}
+  const clientId=$('#ideaClient').value;const c=clientById(clientId);
+  if(id){const i=S.ideas.find(x=>x.id===id);i.text=raw;i.clientId=clientId;i.status=$('#ideaStatus').value}
+  else S.ideas.push({id:uid(),text:cleanIdea(raw,c),clientId,status:'nueva',createdAt:Date.now()});
+  closeSheet();save();toast(c?`💡 Idea guardada en ${c.name}`:'💡 Idea guardada');
+}
+function deleteIdea(id){if(!confirm('¿Eliminar esta idea?'))return;S.ideas=S.ideas.filter(i=>i.id!==id);closeSheet();save()}
+
+/* ============ Inicio ============ */
+render();pull();
+</script>
+</body>
+</html>
