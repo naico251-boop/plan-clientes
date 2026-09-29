@@ -31,12 +31,12 @@ header.top{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;al
 .logo{width:34px;height:34px;border-radius:10px;background:var(--accent);display:grid;place-items:center;font-size:18px;flex:none;box-shadow:0 0 18px rgba(255,197,61,.35)}
 .top h1{font-size:18px;margin:0;font-weight:800;letter-spacing:-.02em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .back{background:var(--surface2);border:0;border-radius:10px;width:34px;height:34px;font-size:18px}
-.sync{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 10px}
+.sync{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 10px;cursor:pointer}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
 .dot.ok{background:var(--green)}.dot.err{background:var(--red)}.dot.sync{background:var(--accent);animation:pulse 1s infinite}
 @keyframes pulse{50%{opacity:.3}}
 
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:4px 0 18px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:4px 0 14px}
 .stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px 8px;text-align:center}
 .stat b{display:block;font-size:22px;font-weight:800}
 .stat span{font-size:11px;color:var(--muted)}
@@ -77,8 +77,8 @@ h2.sec.late{color:var(--red)}
 .hero{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px;border-top:4px solid var(--c)}
 .hero .sub{color:var(--muted);font-size:13px}
 .hero .big{font-size:28px;font-weight:800}
-.tabs{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:14px}
-.tabs button{flex:1;border:0;background:transparent;padding:9px;border-radius:9px;font-weight:600;color:var(--muted)}
+.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:14px}
+.tabs button{flex:1;border:0;background:transparent;padding:9px 4px;border-radius:9px;font-weight:600;color:var(--muted);font-size:13px;white-space:nowrap}
 .tabs button.on{background:var(--surface2);color:var(--text)}
 
 .quick{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
@@ -86,6 +86,7 @@ h2.sec.late{color:var(--red)}
 input[type=text],input[type=date],input[type=url],input[type=password],select,textarea{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:11px 12px;width:100%;outline:none;min-width:0}
 input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .quick input[type=date]{flex:0 0 150px;width:150px}
+.quick select{flex:0 0 140px;width:140px}
 textarea{resize:vertical;min-height:90px;line-height:1.45}
 .btn{border:0;border-radius:10px;padding:11px 16px;font-weight:700;background:var(--surface2);color:var(--text)}
 .btn.primary{background:var(--accent);color:var(--accent-ink)}
@@ -158,6 +159,44 @@ pre.sql{background:var(--surface2);border-radius:10px;padding:12px;font-size:12p
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(100px + env(safe-area-inset-bottom));background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;font-size:14px;z-index:60;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw;text-align:center}
 .toast.show{opacity:1}
 .muted{color:var(--muted)}
+
+/* ---- V2: fases ---- */
+.phhead{display:flex;align-items:center;gap:10px;margin:20px 0 8px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.phhead .pbar{flex:1;height:6px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.phhead .pbar i{display:block;height:100%;background:var(--c,var(--accent));border-radius:99px}
+.phhead .cnt{font-weight:600;font-size:12px}
+.phempty{font-size:12px;color:var(--muted);padding:2px 2px 6px}
+.phrow{display:flex;gap:6px;margin-bottom:8px}
+.phrow input{flex:1}
+.tplopt{display:block;background:var(--surface2);border:2px solid transparent;border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer}
+.tplopt.on{border-color:var(--accent)}
+
+/* ---- V2: calendario ---- */
+.cal-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.cal-head h3{flex:1;margin:0;text-align:center;font-size:17px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-dow{text-align:center;font-size:11px;color:var(--muted);font-weight:700;padding:4px 0}
+.cal-day{min-height:54px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:5px 2px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:13px;font-weight:600}
+.cal-day.today{border-color:var(--accent)}
+.cal-day.sel{background:var(--surface2);box-shadow:0 0 0 2px var(--accent) inset}
+.cal-day.late .num{color:var(--red)}
+.cal-dots{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;max-width:100%}
+.cal-dots i{width:7px;height:7px;border-radius:50%;background:var(--c)}
+.cal-dots i.dn{opacity:.3}
+.cal-more{font-size:9px;color:var(--muted);line-height:7px}
+
+/* ---- V2: pizarra ---- */
+.boardwrap{position:relative;height:calc(100dvh - 340px);min-height:400px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
+.boardwrap.full{position:fixed;inset:0;z-index:40;height:auto;min-height:0;border:0;border-radius:0}
+.boardwrap svg{width:100%;height:100%;display:block;touch-action:none;user-select:none;-webkit-user-select:none}
+.btools{position:absolute;top:10px;left:10px;right:10px;z-index:2;display:flex;gap:6px;flex-wrap:wrap;pointer-events:none}
+.boardwrap.full .btools{top:calc(10px + env(safe-area-inset-top))}
+.btools .btn{pointer-events:auto;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.bhint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--accent-ink);padding:8px 8px 8px 16px;border-radius:99px;font-weight:700;font-size:13px;z-index:2;display:none;white-space:nowrap;align-items:center;gap:8px}
+.bhint.on{display:flex}
+.bhint button{border:0;background:rgba(0,0,0,.15);border-radius:99px;width:26px;height:26px;color:inherit}
+.ztitle{font:700 15px Inter,system-ui,sans-serif;fill:var(--text)}
+.ntxt{white-space:pre-wrap;word-break:break-word;padding:10px 12px;font:600 14px/1.35 Inter,system-ui,sans-serif;color:#221c14;overflow:hidden;height:100%;box-sizing:border-box;pointer-events:none}
 </style>
 </head>
 <body>
@@ -185,23 +224,26 @@ pre.sql{background:var(--surface2);border-radius:10px;padding:12px;font-size:12p
 const LS_KEY='lb_plan_clientes_v1', CFG_KEY='lb_plan_clientes_cfg';
 const TABLE='plan_clientes_estado', ROW_ID='principal';
 const COLORS=['#ffc53d','#ff6b5b','#5fd18b','#6aa8ff','#c08bff','#ff8fc7','#2ec4b6','#ff9f43'];
+const NOTE_COLORS=['#fff3a3','#ffc9d6','#c8f1d4','#c7e0ff','#e2d0ff','#ffd9b0'];
 const IDEA_ST={nueva:'Nueva',desarrollo:'En desarrollo',convertida:'Convertida',descartada:'Descartada'};
+const REPEATS={'':'No se repite',semanal:'Cada semana',quincenal:'Cada 2 semanas',mensual:'Cada mes'};
 
 function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 
 let S=loadLocal();
 let cfg=JSON.parse(lsGet(CFG_KEY)||'{}');
-let view={name:'hoy',clientId:null,tab:'plan',ideaFilter:'nueva',showArchived:false};
+let view={name:'hoy',clientId:null,tab:'plan',ideaFilter:'nueva',hoyMode:'lista',calMonth:'',calDay:'',calClient:'',boardFull:false,lastPhase:''};
 let syncState={s:'local',msg:''};
 
 function loadLocal(){
   try{const d=JSON.parse(lsGet(LS_KEY));if(d&&d.clients)return fix(d)}catch(e){}
-  return {clients:[],tasks:[],ideas:[],savedAt:0};
+  return {clients:[],tasks:[],ideas:[],boards:{},savedAt:0};
 }
-function fix(d){d.clients=d.clients||[];d.tasks=d.tasks||[];d.ideas=d.ideas||[];return d}
+function fix(d){d.clients=d.clients||[];d.tasks=d.tasks||[];d.ideas=d.ideas||[];d.boards=d.boards||{};return d}
 function persistLocal(){lsSet(LS_KEY,JSON.stringify(S))}
 function save(){S.savedAt=Date.now();persistLocal();schedulePush();render()}
+function saveQuiet(){S.savedAt=Date.now();persistLocal();schedulePush()}
 
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const $=s=>document.querySelector(s);
@@ -215,6 +257,11 @@ function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'
 const todayStr=()=>ymd(new Date());
 function parseD(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
 function diffDays(s){return Math.round((parseD(s)-parseD(todayStr()))/86400000)}
+function addDays(s,n){const d=parseD(s);d.setDate(d.getDate()+n);return ymd(d)}
+function addMonths(s,n,want){const d=parseD(s);const day=want||d.getDate();d.setDate(1);d.setMonth(d.getMonth()+n);const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(day,last));return ymd(d)}
+function stepDate(s,rep,day){return rep==='mensual'?addMonths(s,1,day):addDays(s,rep==='quincenal'?14:7)}
+function repDay(t){return t.repeatDay||(t.due?parseD(t.due).getDate():0)}
+function nextDue(t){const day=repDay(t);let n=stepDate(t.due||todayStr(),t.repeat,day);let g=0;while(n<todayStr()&&g++<400)n=stepDate(n,t.repeat,day);return n}
 function dateLabel(s){
   if(!s)return'Sin fecha';const n=diffDays(s);
   if(n===0)return'Hoy';if(n===1)return'Mañana';if(n===-1)return'Ayer';
@@ -255,13 +302,19 @@ async function pull(){
   }catch(e){setSync('err',e.message)}
 }
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')pull()});
-setInterval(()=>{if(document.visibilityState==='visible'&&syncState.s!=='sync')pull()},60000);
+setInterval(()=>{if(document.visibilityState==='visible'&&syncState.s!=='sync'&&!B.mode)pull()},60000);
 
 /* ============ Navegación ============ */
-function go(name,extra={}){view={...view,name,...extra};window.scrollTo(0,0);render()}
+function go(name,extra={}){view={...view,name,boardFull:false,...extra};connectFrom=null;window.scrollTo(0,0);render()}
 function openClient(id){go('cliente',{clientId:id,tab:'plan'})}
+function setTab(t){view.tab=t;view.boardFull=false;connectFrom=null;render()}
 
-function render(){renderTop();renderMain();renderNav()}
+function render(){
+  renderTop();renderMain();renderNav();
+  const inBoard=view.name==='cliente'&&view.tab==='pizarra';
+  document.body.style.overflow=(inBoard&&view.boardFull)?'hidden':'';
+  if(inBoard)initBoard();
+}
 function renderTop(){
   const titles={hoy:'Hoy',clientes:'Clientes',ideas:'Ideas',ajustes:'Ajustes'};
   const c=view.name==='cliente'?clientById(view.clientId):null;
@@ -295,10 +348,25 @@ function taskRow(t,showClient=true){
     <button class="chk" onclick="toggleTask('${t.id}')" aria-label="Marcar como hecha">${t.done?'✓':''}</button>
     <div class="tbody" onclick="openTask('${t.id}')">
       <div class="ttitle">${esc(t.title)}</div>
-      <div class="tmeta">${showClient&&c?`<span class="chip" style="--c:${c.color}">${esc(c.name)}</span>`:''}<span class="due">📅 ${dateLabel(t.due)}</span>${t.priority==='alta'?'<span class="prio">Alta</span>':''}${t.notes?'<span>📝</span>':''}</div>
+      <div class="tmeta">${showClient&&c?`<span class="chip" style="--c:${c.color}">${esc(c.name)}</span>`:''}<span class="due">📅 ${dateLabel(t.due)}</span>${t.repeat?`<span title="${REPEATS[t.repeat]}">🔁</span>`:''}${t.priority==='alta'?'<span class="prio">Alta</span>':''}${t.notes?'<span>📝</span>':''}</div>
     </div></div>`;
 }
-function toggleTask(id){const t=S.tasks.find(x=>x.id===id);if(!t)return;t.done=!t.done;t.doneAt=t.done?Date.now():null;save();if(t.done)toast('✓ ¡Hecho!')}
+function toggleTask(id){
+  const t=S.tasks.find(x=>x.id===id);if(!t)return;
+  t.done=!t.done;t.doneAt=t.done?Date.now():null;
+  let msg='✓ ¡Hecho!';
+  if(t.done&&t.repeat){
+    const nd=nextDue(t);
+    const n={...t,id:uid(),done:false,doneAt:null,due:nd,spawnedId:'',repeatDay:repDay(t),createdAt:Date.now()};
+    t.spawnedId=n.id;S.tasks.push(n);
+    msg=`🔁 Hecho · próxima: ${dateLabel(nd)}`;
+  }else if(!t.done&&t.spawnedId){
+    const s=S.tasks.find(x=>x.id===t.spawnedId);
+    if(s&&!s.done)S.tasks=S.tasks.filter(x=>x.id!==s.id);
+    t.spawnedId='';
+  }
+  save();if(t.done)toast(msg);
+}
 
 /* ============ Vista: Hoy ============ */
 function viewHoy(){
@@ -316,11 +384,51 @@ function viewHoy(){
     <div class="stat late"><b>${late.length}</b><span>Vencidas</span></div>
     <div class="stat today"><b>${today.length}</b><span>Hoy</span></div>
     <div class="stat"><b>${week.length}</b><span>Semana</span></div>
-    <div class="stat" onclick="go('ideas',{ideaFilter:'nueva'})" style="cursor:pointer"><b>${ideasN}</b><span>Ideas nuevas</span></div></div>`;
+    <div class="stat" onclick="go('ideas',{ideaFilter:'nueva'})" style="cursor:pointer"><b>${ideasN}</b><span>Ideas nuevas</span></div></div>
+    <div class="tabs"><button class="${view.hoyMode!=='cal'?'on':''}" onclick="view.hoyMode='lista';render()">📋 Lista</button><button class="${view.hoyMode==='cal'?'on':''}" onclick="view.hoyMode='cal';render()">📅 Calendario</button></div>`;
+  if(view.hoyMode==='cal')return h+viewCal();
   if(!late.length&&!today.length)h+=`<div class="empty"><div class="e">🎉</div>Nada pendiente para hoy.${doneToday.length?`<br>Completaste ${doneToday.length} tarea${doneToday.length>1?'s':''} hoy.`:''}</div>`;
   h+=sec('⚠️ Vencidas',late,'late')+sec('Hoy',today)+sec('Próximos 7 días',week)+sec('Más adelante',later)+sec('Sin fecha',nodate);
   if(doneToday.length&&(late.length||today.length))h+=`<details class="done-list"><summary>Completadas hoy (${doneToday.length})</summary>${doneToday.map(t=>taskRow(t)).join('')}</details>`;
   h+=`<div style="margin-top:18px"><button class="btn ghost" style="width:100%" onclick="openTask(null)">+ Nueva tarea</button></div>`;
+  return h;
+}
+
+/* ============ Calendario ============ */
+function calNav(n){const m=view.calMonth||todayStr().slice(0,7);const[Y,M]=m.split('-').map(Number);const d=new Date(Y,M-1+n,1);view.calMonth=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');view.calDay='';render()}
+function calToday(){view.calMonth=todayStr().slice(0,7);view.calDay=todayStr();render()}
+function viewCal(){
+  const m=view.calMonth||todayStr().slice(0,7);
+  const[Y,M]=m.split('-').map(Number);
+  const dim=new Date(Y,M,0).getDate();
+  const lead=(new Date(Y,M-1,1).getDay()+6)%7;
+  const filt=view.calClient||'';
+  const tasks=S.tasks.filter(t=>t.due&&clientById(t.clientId)&&!clientById(t.clientId).archived&&(!filt||t.clientId===filt));
+  const by={};tasks.forEach(t=>(by[t.due]=by[t.due]||[]).push(t));
+  const td=todayStr();
+  const sel=view.calDay&&view.calDay.startsWith(m)?view.calDay:(td.startsWith(m)?td:'');
+  let cells=['L','M','X','J','V','S','D'].map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  for(let i=0;i<lead;i++)cells+='<div></div>';
+  for(let d=1;d<=dim;d++){
+    const ds=`${m}-${String(d).padStart(2,'0')}`;
+    const list=by[ds]||[];const pend=list.filter(t=>!t.done);
+    const show=pend.length?pend:list;
+    const late=pend.length&&ds<td;
+    const dots=show.slice(0,4).map(t=>`<i class="${t.done?'dn':''}" style="--c:${clientById(t.clientId).color}"></i>`).join('');
+    const more=show.length>4?`<span class="cal-more">+${show.length-4}</span>`:'';
+    cells+=`<button class="cal-day ${ds===td?'today':''} ${ds===sel?'sel':''} ${late?'late':''}" data-d="${ds}" onclick="view.calDay='${ds}';render()"><span class="num">${d}</span><span class="cal-dots">${dots}${more}</span></button>`;
+  }
+  const title=cap(new Date(Y,M-1,1).toLocaleDateString('es-CO',{month:'long',year:'numeric'}));
+  let h=`<div class="quick" style="margin-top:4px"><select id="calFilter" style="flex:1 1 auto;width:auto" onchange="view.calClient=this.value;render()"><option value="">Todos los clientes</option>${activeClients().map(c=>`<option value="${c.id}" ${c.id===filt?'selected':''}>${esc(c.name)}</option>`).join('')}</select><button class="btn ghost" onclick="calToday()">Hoy</button></div>
+   <div class="cal-head"><button class="btn sm" onclick="calNav(-1)" aria-label="Mes anterior">‹</button><h3>${title}</h3><button class="btn sm" onclick="calNav(1)" aria-label="Mes siguiente">›</button></div>
+   <div class="cal-grid">${cells}</div>`;
+  if(sel){
+    const list=(by[sel]||[]).slice().sort((a,b)=>(a.done-b.done)||sortTasks(a,b));
+    const lbl=cap(parseD(sel).toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'}));
+    h+=`<h2 class="sec">${lbl}<span class="n">${list.length}</span></h2>`;
+    h+=list.length?list.map(t=>taskRow(t)).join(''):`<div class="empty" style="padding:18px">Sin tareas este día.</div>`;
+    h+=`<button class="btn ghost" style="width:100%;margin-top:6px" onclick="openTask(null,{due:'${sel}'${filt?`,clientId:'${filt}'`:''}})">+ Tarea para este día</button>`;
+  }else h+=`<div class="empty" style="margin-top:14px">Tocá un día para ver sus tareas.</div>`;
   return h;
 }
 
@@ -348,6 +456,7 @@ function viewClientes(){
 }
 
 /* ============ Vista: Detalle cliente ============ */
+function phaseOpts(c,sel){return `<option value="">Sin fase</option>`+((c&&c.phases)||[]).map(p=>`<option value="${p.id}" ${p.id===sel?'selected':''}>${esc(p.name)}</option>`).join('')}
 function viewCliente(c){
   const s=clientStats(c);
   let h=`<div class="hero" style="--c:${c.color}">
@@ -355,14 +464,47 @@ function viewCliente(c){
     <div style="display:flex;align-items:baseline;gap:10px;margin-top:6px"><span class="big">${s.pct}%</span><span class="muted">${s.done} de ${s.total} tareas completadas</span></div>
     <div class="bar"><i style="width:${s.pct}%"></i></div></div>
   <div class="tabs">
-    ${['plan','ideas','info'].map(t=>`<button class="${view.tab===t?'on':''}" onclick="view.tab='${t}';render()">${{plan:'📋 Plan',ideas:'💡 Ideas',info:'ℹ️ Info'}[t]}</button>`).join('')}
+    ${['plan','pizarra','ideas','info'].map(t=>`<button class="${view.tab===t?'on':''}" onclick="setTab('${t}')">${{plan:'📋 Plan',pizarra:'🧠 Pizarra',ideas:'💡 Ideas',info:'ℹ️ Info'}[t]}</button>`).join('')}
   </div>`;
   if(view.tab==='plan'){
     const ts=S.tasks.filter(t=>t.clientId===c.id);
-    const pend=ts.filter(t=>!t.done).sort(sortTasks);const done=ts.filter(t=>t.done).sort((a,b)=>(b.doneAt||0)-(a.doneAt||0));
-    h+=`<div class="quick"><input type="text" id="qTitle" placeholder="Nueva tarea…" onkeydown="if(event.key==='Enter')quickAdd('${c.id}')"><input type="date" id="qDate"><button class="btn primary" onclick="quickAdd('${c.id}')">Agregar</button></div>`;
-    h+=pend.length?pend.map(t=>taskRow(t,false)).join(''):`<div class="empty"><div class="e">📋</div>Sin tareas pendientes. Agregá la primera arriba.</div>`;
+    const ph=c.phases||[];
+    const pid=t=>ph.some(p=>p.id===t.phaseId)?t.phaseId:'';
+    const pend=ts.filter(t=>!t.done).sort(sortTasks);
+    const done=ts.filter(t=>t.done).sort((a,b)=>(b.doneAt||0)-(a.doneAt||0));
+    h+=`<div class="quick"><input type="text" id="qTitle" placeholder="Nueva tarea…" onkeydown="if(event.key==='Enter')quickAdd('${c.id}')">${ph.length?`<select id="qPhase" aria-label="Fase">${phaseOpts(c,view.lastPhase)}</select>`:''}<input type="date" id="qDate"><button class="btn primary" onclick="quickAdd('${c.id}')">Agregar</button></div>
+    <div class="actions" style="margin:-4px 0 6px"><button class="btn sm ghost" onclick="openPlanTemplates('${c.id}')">📋 Cargar plantilla</button><button class="btn sm ghost" onclick="openPhases('${c.id}')">🗂️ Fases</button></div>`;
+    if(!ph.length){
+      h+=pend.length?pend.map(t=>taskRow(t,false)).join(''):`<div class="empty"><div class="e">📋</div>Sin tareas pendientes. Agregá la primera arriba o cargá una plantilla.</div>`;
+    }else{
+      const groups=ph.map(p=>({id:p.id,name:p.name}));
+      if(ts.some(t=>pid(t)===''))groups.push({id:'',name:'Sin fase'});
+      groups.forEach(g=>{
+        const all=ts.filter(t=>pid(t)===g.id);const dn=all.filter(t=>t.done).length;
+        const pp=pend.filter(t=>pid(t)===g.id);
+        h+=`<div class="phhead" style="--c:${c.color}"><span>${esc(g.name)}</span><div class="pbar"><i style="width:${all.length?Math.round(dn/all.length*100):0}%"></i></div><span class="cnt">${dn}/${all.length}</span></div>`;
+        h+=pp.length?pp.map(t=>taskRow(t,false)).join(''):`<div class="phempty">${all.length?'Todo listo en esta fase ✓':'Sin tareas en esta fase.'}</div>`;
+      });
+    }
     if(done.length)h+=`<details class="done-list"><summary>Completadas (${done.length})</summary>${done.map(t=>taskRow(t,false)).join('')}</details>`;
+  }else if(view.tab==='pizarra'){
+    h+=`<div class="boardwrap ${view.boardFull?'full':''}" id="bw">
+      <div class="btools">
+        <button class="btn sm primary" onclick="newNote()">＋ Nota</button>
+        <button class="btn sm" onclick="newZone()">▭ Zona</button>
+        <button class="btn sm" onclick="openBoardTpl()">🧩 Plantilla</button>
+        <button class="btn sm" onclick="fitBoard()" aria-label="Encajar">⤢</button>
+        <button class="btn sm" onclick="toggleFull()">${view.boardFull?'✕ Salir':'⛶ Ampliar'}</button>
+      </div>
+      <div class="bhint" id="bhint">🔗 Tocá la nota destino <button onclick="cancelConnect()" aria-label="Cancelar">✕</button></div>
+      <svg id="bsvg" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="bdots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.3" style="fill:var(--line)"/></pattern>
+          <marker id="arh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--muted)"/></marker>
+        </defs>
+        <g id="bg"></g>
+      </svg></div>
+      <p class="muted" style="font-size:12px;margin:8px 2px 0">Tocá una nota para editarla · arrastrala para moverla · pellizcá o usá la rueda para el zoom.</p>`;
   }else if(view.tab==='ideas'){
     const ids=S.ideas.filter(i=>i.clientId===c.id).sort((a,b)=>b.createdAt-a.createdAt);
     h+=`<button class="btn primary" style="width:100%;margin-bottom:12px" onclick="openIdea('${c.id}',null,false)">🎙️ Nueva idea para ${esc(c.name)}</button>`;
@@ -376,8 +518,71 @@ function viewCliente(c){
 }
 function quickAdd(cid){
   const title=$('#qTitle').value.trim();if(!title){$('#qTitle').focus();return}
-  S.tasks.push({id:uid(),clientId:cid,title,due:$('#qDate').value||'',priority:'normal',done:false,notes:'',createdAt:Date.now()});
+  const ph=$('#qPhase')?$('#qPhase').value:'';view.lastPhase=ph;
+  S.tasks.push({id:uid(),clientId:cid,title,due:$('#qDate').value||'',priority:'normal',done:false,notes:'',phaseId:ph,repeat:'',createdAt:Date.now()});
   save();setTimeout(()=>{const q=$('#qTitle');if(q)q.focus()},50);
+}
+
+/* ============ Fases y plantillas de plan ============ */
+let phaseDraft=[];
+function openPhases(cid){phaseDraft=((clientById(cid).phases)||[]).map(p=>({...p}));drawPhases(cid)}
+function syncDraft(){document.querySelectorAll('#phList input').forEach(i=>{const p=phaseDraft.find(x=>x.id===i.dataset.id);if(p)p.name=i.value})}
+function drawPhases(cid){
+  openSheet(`<h3>🗂️ Fases del plan</h3>
+    <p class="muted" style="font-size:13px;margin:-6px 0 12px">Agrupan las tareas por etapa y muestran el avance de cada una.</p>
+    <div id="phList">${phaseDraft.length?phaseDraft.map((p,i)=>`<div class="phrow"><input type="text" data-id="${p.id}" value="${esc(p.name)}"><button class="btn sm ghost" onclick="phMove('${cid}',${i},-1)" aria-label="Subir">▲</button><button class="btn sm ghost" onclick="phMove('${cid}',${i},1)" aria-label="Bajar">▼</button><button class="btn sm danger" onclick="phDel('${cid}',${i})" aria-label="Quitar">✕</button></div>`).join(''):'<p class="muted" style="font-size:13px">Todavía no hay fases.</p>'}</div>
+    <div class="quick" style="margin-top:10px"><input type="text" id="phNew" placeholder="Nueva fase…" onkeydown="if(event.key==='Enter')phAdd('${cid}')"><button class="btn primary" onclick="phAdd('${cid}')">Agregar</button></div>
+    ${phaseDraft.length?'':`<button class="btn sm ghost" onclick="phSuggest('${cid}')">Usar fases sugeridas</button>`}
+    <div class="actions"><button class="btn ghost" onclick="closeSheet()">Cancelar</button><span class="sp"></span><button class="btn primary" onclick="phSave('${cid}')">Guardar</button></div>`);
+}
+function phAdd(cid){syncDraft();const i=$('#phNew');const n=i.value.trim();if(!n){i.focus();return}phaseDraft.push({id:uid(),name:n});drawPhases(cid);setTimeout(()=>$('#phNew').focus(),50)}
+function phMove(cid,i,d){syncDraft();const j=i+d;if(j<0||j>=phaseDraft.length)return;[phaseDraft[i],phaseDraft[j]]=[phaseDraft[j],phaseDraft[i]];drawPhases(cid)}
+function phDel(cid,i){syncDraft();phaseDraft.splice(i,1);drawPhases(cid)}
+function phSuggest(cid){phaseDraft=['Planeación','Producción','Publicación','Reporte'].map(name=>({id:uid(),name}));drawPhases(cid)}
+function phSave(cid){
+  syncDraft();const c=clientById(cid);
+  c.phases=phaseDraft.filter(p=>p.name.trim()).map(p=>({id:p.id,name:p.name.trim()}));
+  S.tasks.forEach(t=>{if(t.clientId===cid&&t.phaseId&&!c.phases.some(p=>p.id===t.phaseId))t.phaseId=''});
+  closeSheet();save();toast('Fases guardadas');
+}
+
+const PLAN_TPL={
+  contenido:{ico:'🗓️',name:'Contenido mensual',desc:'Planeación, producción, publicación y reporte del mes',
+    phases:['Planeación','Producción','Publicación','Reporte'],
+    tasks:[['Planeación','Reunión de brief y objetivos del mes',0,'','alta'],['Planeación','Definir pilares y calendario editorial',2],['Planeación','Escribir guiones y textos de las piezas',5],
+      ['Producción','Sesión de grabación / fotos',8],['Producción','Edición de videos y piezas gráficas',12],
+      ['Publicación','Enviar piezas al cliente para aprobación',14],['Publicación','Programar publicaciones aprobadas',16],['Publicación','Publicar y responder a la comunidad',17,'semanal'],
+      ['Reporte','Reporte mensual de resultados',27],['Reporte','Reunión de resultados con el cliente',29,'','alta']]},
+  metaads:{ico:'📣',name:'Campaña Meta Ads',desc:'De la estrategia al reporte final de una campaña',
+    phases:['Estrategia','Creativos','Lanzamiento','Optimización','Reporte'],
+    tasks:[['Estrategia','Definir objetivo, público y presupuesto',0,'','alta'],['Estrategia','Revisar cuenta publicitaria, píxel y eventos',1],
+      ['Creativos','Guiones de los anuncios',2],['Creativos','Producir piezas (video e imagen)',5],['Creativos','Redactar textos y titulares',5],['Creativos','Aprobación de creativos por el cliente',7,'','alta'],
+      ['Lanzamiento','Montar campaña, conjuntos y anuncios',8],['Lanzamiento','Lanzar campaña',9,'','alta'],
+      ['Optimización','Revisar métricas y ajustar',12,'semanal'],
+      ['Reporte','Reporte de resultados de la campaña',23],['Reporte','Reunión de cierre y siguientes pasos',25]]},
+  video:{ico:'🎬',name:'Producción de video',desc:'Preproducción, rodaje, postproducción y entrega',
+    phases:['Preproducción','Rodaje','Postproducción','Entrega'],
+    tasks:[['Preproducción','Brief y objetivo del video',0,'','alta'],['Preproducción','Escribir guion',2],['Preproducción','Aprobación del guion',4],['Preproducción','Plan de rodaje, locaciones y permisos',5],
+      ['Rodaje','Día de rodaje',7,'','alta'],['Rodaje','Respaldar y organizar el material',8],
+      ['Postproducción','Corte inicial',10],['Postproducción','Color, audio y gráficos',12],['Postproducción','Versión con ajustes',14],
+      ['Entrega','Aprobación final del cliente',16,'','alta'],['Entrega','Exportar y entregar archivos',17]]}
+};
+let tplSel='contenido';
+function openPlanTemplates(cid){
+  tplSel='contenido';
+  openSheet(`<h3>📋 Cargar plantilla de plan</h3>
+    <p class="muted" style="font-size:13px;margin:-6px 0 12px">Agrega tareas con fechas calculadas desde el día de arranque. Después podés editarlas o borrarlas.</p>
+    ${Object.entries(PLAN_TPL).map(([k,t])=>`<div class="tplopt ${k===tplSel?'on':''}" data-k="${k}" onclick="pickTpl('${k}')"><b>${t.ico} ${t.name}</b><div class="muted" style="font-size:12px;margin-top:3px">${t.desc} · ${t.tasks.length} tareas</div></div>`).join('')}
+    <div class="field" style="margin-top:12px"><label>Fecha de arranque</label><input type="date" id="tplDate" value="${todayStr()}"></div>
+    <div class="actions"><button class="btn ghost" onclick="closeSheet()">Cancelar</button><span class="sp"></span><button class="btn primary" onclick="applyPlanTpl('${cid}')">Cargar plantilla</button></div>`);
+}
+function pickTpl(k){tplSel=k;document.querySelectorAll('.tplopt').forEach(e=>e.classList.toggle('on',e.dataset.k===k))}
+function applyPlanTpl(cid){
+  const c=clientById(cid);const tpl=PLAN_TPL[tplSel];const start=$('#tplDate').value||todayStr();
+  c.phases=c.phases||[];const ids={};
+  tpl.phases.forEach(name=>{let p=c.phases.find(x=>norm(x.name)===norm(name));if(!p){p={id:uid(),name};c.phases.push(p)}ids[name]=p.id});
+  tpl.tasks.forEach(([ph,title,off,rep,prio],i)=>S.tasks.push({id:uid(),clientId:cid,title,due:addDays(start,off),priority:prio||'normal',done:false,notes:'',phaseId:ids[ph]||'',repeat:rep||'',createdAt:Date.now()+i}));
+  closeSheet();save();toast(`✓ ${tpl.tasks.length} tareas agregadas`);
 }
 
 /* ============ Vista: Ideas ============ */
@@ -412,13 +617,14 @@ function viewAjustes(){
     <div class="field"><label>URL del proyecto</label><input type="url" id="cfgUrl" value="${esc(cfg.url||'https://komlqdnxndacimlrdxhq.supabase.co')}"></div>
     <div class="field"><label>Anon key (pública)</label><input type="password" id="cfgKey" value="${esc(cfg.key||'')}" placeholder="eyJhbGciOi…"></div>
     <div class="actions" style="margin-top:4px"><button class="btn primary" onclick="saveCfg()">Guardar y conectar</button>${sbReady()?`<button class="btn ghost" onclick="pull()">Sincronizar ahora</button><button class="btn danger" onclick="clearCfg()">Desconectar</button>`:''}</div>
+    <p style="margin:12px 0 0;font-size:12px">Ojo: con esta clave, cualquiera que la tenga puede leer y escribir esta tabla. Usala solo para datos de trabajo tuyos.</p>
     ${syncState.s==='err'?`<p style="color:var(--red);margin-top:10px">${esc(syncState.msg)}</p>`:''}</div>
   <div class="set"><h3>🗄️ Tabla necesaria (una sola vez)</h3>
-    <p>Pegá esto en Supabase → SQL Editor → Run.</p><pre class="sql">${esc(SQL)}</pre>
+    <p>Pegá esto en Supabase → SQL Editor → Run. Si ya la creaste en la V1, no tenés que hacer nada.</p><pre class="sql">${esc(SQL)}</pre>
     <button class="btn sm ghost" onclick="copySQL()">Copiar SQL</button></div>
   <div class="set"><h3>💾 Respaldo</h3><p>Descargá una copia de todo o restaurá un respaldo anterior.</p>
     <div class="actions" style="margin-top:0"><button class="btn ghost" onclick="exportJSON()">Exportar</button><button class="btn ghost" onclick="$('#importFile').click()">Importar</button></div></div>
-  <p class="muted" style="text-align:center;font-size:12px;margin-top:20px">Plan de Clientes · La Bombilla · v1<br>${S.clients.length} clientes · ${S.tasks.length} tareas · ${S.ideas.length} ideas</p>`;
+  <p class="muted" style="text-align:center;font-size:12px;margin-top:20px">Plan de Clientes · La Bombilla · v2<br>${S.clients.length} clientes · ${S.tasks.length} tareas · ${S.ideas.length} ideas</p>`;
 }
 function saveCfg(){
   let url=$('#cfgUrl').value.trim().replace(/\/+$/,'');const key=$('#cfgKey').value.trim();
@@ -461,18 +667,18 @@ function openClientForm(id){
     <div class="actions"><button class="btn ghost" onclick="closeSheet()">Cancelar</button><span class="sp"></span><button class="btn primary" onclick="saveClient('${id||''}')">Guardar</button></div>`);
   setTimeout(()=>$('#cName').focus(),80);
 }
-function pickColor(k){formColor=k;document.querySelectorAll('#sw button').forEach(b=>b.classList.toggle('on',b.style.background&&b.getAttribute('onclick').includes(k)))}
+function pickColor(k){formColor=k;document.querySelectorAll('#sw button').forEach(b=>b.classList.toggle('on',b.getAttribute('onclick').includes(k)))}
 function saveClient(id){
   const name=$('#cName').value.trim();if(!name){toast('Poné un nombre');return}
   const data={name,alias:$('#cAlias').value.trim(),sector:$('#cSector').value.trim(),service:$('#cService').value.trim(),contact:$('#cContact').value.trim(),start:$('#cStart').value,notes:$('#cNotes').value.trim(),color:formColor};
   if(id)Object.assign(clientById(id),data);
-  else{const c={id:uid(),createdAt:Date.now(),archived:false,...data};S.clients.push(c);view={...view,name:'cliente',clientId:c.id,tab:'plan'}}
+  else{const c={id:uid(),createdAt:Date.now(),archived:false,phases:[],...data};S.clients.push(c);view={...view,name:'cliente',clientId:c.id,tab:'plan'}}
   closeSheet();save();
 }
 function archiveClient(id){const c=clientById(id);c.archived=!c.archived;save();toast(c.archived?'Cliente archivado':'Cliente reactivado')}
 function deleteClient(id){
-  const c=clientById(id);if(!confirm(`¿Eliminar "${c.name}" con todas sus tareas e ideas? No se puede deshacer.`))return;
-  S.clients=S.clients.filter(x=>x.id!==id);S.tasks=S.tasks.filter(t=>t.clientId!==id);S.ideas=S.ideas.filter(i=>i.clientId!==id);
+  const c=clientById(id);if(!confirm(`¿Eliminar "${c.name}" con todas sus tareas, ideas y pizarra? No se puede deshacer.`))return;
+  S.clients=S.clients.filter(x=>x.id!==id);S.tasks=S.tasks.filter(t=>t.clientId!==id);S.ideas=S.ideas.filter(i=>i.clientId!==id);delete S.boards[id];
   view.name='clientes';save();
 }
 
@@ -480,25 +686,30 @@ function deleteClient(id){
 let formPrio='normal';
 function openTask(id,preset){
   if(!activeClients().length){toast('Primero creá un cliente');return}
-  const t=id?S.tasks.find(x=>x.id===id):{title:'',clientId:view.name==='cliente'?view.clientId:activeClients()[0].id,due:todayStr(),priority:'normal',notes:'',...(preset||{})};
+  const t=id?S.tasks.find(x=>x.id===id):{title:'',clientId:view.name==='cliente'?view.clientId:activeClients()[0].id,due:todayStr(),priority:'normal',notes:'',phaseId:'',repeat:'',...(preset||{})};
   formPrio=t.priority||'normal';
+  const c=clientById(t.clientId);
   openSheet(`<h3>${id?'Editar tarea':'Nueva tarea'}</h3>
     <div class="field"><label>Tarea *</label><textarea id="tTitle" style="min-height:60px">${esc(t.title)}</textarea></div>
-    <div class="two"><div class="field"><label>Cliente</label><select id="tClient">${clientOptions(t.clientId)}</select></div>
-    <div class="field"><label>Fecha</label><input type="date" id="tDue" value="${esc(t.due)}"></div></div>
+    <div class="two"><div class="field"><label>Cliente</label><select id="tClient" onchange="refreshTaskPhases('')">${clientOptions(t.clientId)}</select></div>
+    <div class="field"><label>Fecha de entrega</label><input type="date" id="tDue" value="${esc(t.due)}"></div></div>
+    <div class="two"><div class="field"><label>Fase</label><select id="tPhase">${phaseOpts(c,t.phaseId||'')}</select></div>
+    <div class="field"><label>Repetir</label><select id="tRepeat">${Object.entries(REPEATS).map(([k,v])=>`<option value="${k}" ${k===(t.repeat||'')?'selected':''}>${v}</option>`).join('')}</select></div></div>
     <div class="field"><label>Prioridad</label><div class="seg" id="prio"><button class="${formPrio==='normal'?'on':''}" onclick="setPrio('normal')">Normal</button><button class="${formPrio==='alta'?'on':''}" onclick="setPrio('alta')">🔥 Alta</button></div></div>
     <div class="field"><label>Notas</label><textarea id="tNotes">${esc(t.notes)}</textarea></div>
-    <div class="actions">${id?`<button class="btn danger" onclick="deleteTask('${id}')">Eliminar</button>`:`<button class="btn ghost" onclick="closeSheet()">Cancelar</button>`}<span class="sp"></span><button class="btn primary" onclick="saveTask('${id||''}','${(preset&&preset.fromIdea)||''}')">Guardar</button></div>`);
+    <div class="actions">${id?`<button class="btn danger" onclick="deleteTask('${id}')">Eliminar</button>`:`<button class="btn ghost" onclick="closeSheet()">Cancelar</button>`}<span class="sp"></span><button class="btn primary" onclick="saveTask('${id||''}','${(preset&&preset.fromIdea)||''}','${(preset&&preset.fromNote)||''}')">Guardar</button></div>`);
   if(!id)setTimeout(()=>$('#tTitle').focus(),80);
 }
+function refreshTaskPhases(sel){$('#tPhase').innerHTML=phaseOpts(clientById($('#tClient').value),sel)}
 function setPrio(p){formPrio=p;document.querySelectorAll('#prio button').forEach((b,i)=>b.classList.toggle('on',(i===0&&p==='normal')||(i===1&&p==='alta')))}
-function saveTask(id,fromIdea){
+function saveTask(id,fromIdea,fromNote){
   const title=$('#tTitle').value.trim();if(!title){toast('Escribí la tarea');return}
-  const data={title,clientId:$('#tClient').value,due:$('#tDue').value,priority:formPrio,notes:$('#tNotes').value.trim()};
-  if(id)Object.assign(S.tasks.find(t=>t.id===id),data);
+  const data={title,clientId:$('#tClient').value,due:$('#tDue').value,priority:formPrio,notes:$('#tNotes').value.trim(),phaseId:$('#tPhase').value,repeat:$('#tRepeat').value};
+  if(id)Object.assign(S.tasks.find(t=>t.id===id),data,{repeatDay:''});
   else{const t={id:uid(),done:false,createdAt:Date.now(),...data};S.tasks.push(t);
-    if(fromIdea){const i=S.ideas.find(x=>x.id===fromIdea);if(i){i.status='convertida';i.taskId=t.id;if(!i.clientId)i.clientId=data.clientId}}}
-  closeSheet();save();toast(fromIdea?'Idea convertida en tarea':'Tarea guardada');
+    if(fromIdea){const i=S.ideas.find(x=>x.id===fromIdea);if(i){i.status='convertida';i.taskId=t.id;if(!i.clientId)i.clientId=data.clientId}}
+    if(fromNote){for(const bd of Object.values(S.boards)){const n=bd.notes.find(x=>x.id===fromNote);if(n){n.taskId=t.id;break}}}}
+  closeSheet();save();toast(fromIdea?'Idea convertida en tarea':fromNote?'Nota convertida en tarea':'Tarea guardada');
 }
 function deleteTask(id){if(!confirm('¿Eliminar esta tarea?'))return;S.tasks=S.tasks.filter(t=>t.id!==id);closeSheet();save()}
 function ideaToTask(iid){const i=S.ideas.find(x=>x.id===iid);openTask(null,{title:i.text.length>140?i.text.slice(0,140)+'…':i.text,clientId:i.clientId||activeClients()[0]?.id,notes:i.text.length>140?i.text:'',fromIdea:i.id})}
@@ -506,7 +717,7 @@ function ideaToTask(iid){const i=S.ideas.find(x=>x.id===iid);openTask(null,{titl
 /* ============ Ideas + dictado ============ */
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 let rec=null,recBase='',clientTouched=false;
-function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9ñ ]/g,' ').replace(/\s+/g,' ').trim()}
+function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9ñ ]/g,' ').replace(/\s+/g,' ').trim()}
 function detectClient(text){
   const n=' '+norm(text)+' ';let best=null,len=0;
   for(const c of activeClients())for(const k of [c.name,c.alias]){const kn=norm(k);if(kn.length>=3&&n.includes(' '+kn+' ')&&kn.length>len){best=c;len=kn.length}}
@@ -556,6 +767,267 @@ function saveIdea(id){
   closeSheet();save();toast(c?`💡 Idea guardada en ${c.name}`:'💡 Idea guardada');
 }
 function deleteIdea(id){if(!confirm('¿Eliminar esta idea?'))return;S.ideas=S.ideas.filter(i=>i.id!==id);closeSheet();save()}
+
+/* ============ Pizarra ============ */
+const boardViews={};
+let connectFrom=null;
+const B={ptrs:new Map(),mode:null,kind:null,id:null,moved:false,sx:0,sy:0,orig:null,carry:null,v0:null,pinch:null};
+const snap=v=>Math.round(v/10)*10;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function getBoard(cid){return S.boards[cid]||(S.boards[cid]={notes:[],zones:[],arrows:[]})}
+function bv(cid){return boardViews[cid]||(boardViews[cid]={x:40,y:80,k:1,fresh:true})}
+function boardBounds(b){
+  const items=[...b.zones,...b.notes];if(!items.length)return null;
+  let x1=1e9,y1=1e9,x2=-1e9,y2=-1e9;
+  items.forEach(o=>{x1=Math.min(x1,o.x);y1=Math.min(y1,o.y);x2=Math.max(x2,o.x+o.w);y2=Math.max(y2,o.y+o.h)});
+  return{x1,y1,x2,y2};
+}
+function fitBoard(){
+  const svg=$('#bsvg');if(!svg)return;
+  const r=svg.getBoundingClientRect();const v=bv(view.clientId);const bb=boardBounds(getBoard(view.clientId));
+  if(!bb){v.x=40;v.y=80;v.k=1}
+  else{
+    const w=bb.x2-bb.x1,h=bb.y2-bb.y1,pad=40,top=70;
+    v.k=Math.max(.2,Math.min(1.2,(r.width-pad*2)/w,(r.height-top-pad)/h));
+    v.x=(r.width-w*v.k)/2-bb.x1*v.k;
+    v.y=top+((r.height-top-pad)-h*v.k)/2-bb.y1*v.k;
+  }
+  v.fresh=false;drawBoard();
+}
+function centerWorld(){
+  const svg=$('#bsvg');const r=svg.getBoundingClientRect();const v=bv(view.clientId);
+  return{x:(r.width/2-v.x)/v.k,y:(r.height/2-v.y)/v.k};
+}
+function edgePt(n,px,py){
+  const cx=n.x+n.w/2,cy=n.y+n.h/2,dx=px-cx,dy=py-cy;
+  if(!dx&&!dy)return{x:cx,y:cy};
+  const s=Math.min((n.w/2+4)/Math.abs(dx||1e-9),(n.h/2+4)/Math.abs(dy||1e-9));
+  return{x:cx+dx*s,y:cy+dy*s};
+}
+function drawBoard(){
+  const g=$('#bg');if(!g)return;
+  const cid=view.clientId,b=getBoard(cid),v=bv(cid);
+  g.setAttribute('transform',`translate(${v.x},${v.y}) scale(${v.k})`);
+  let h='<rect x="-6000" y="-6000" width="12000" height="12000" fill="url(#bdots)"/>';
+  b.zones.forEach(z=>{
+    h+=`<g data-kind="zone" data-id="${z.id}"><rect x="${z.x}" y="${z.y}" width="${z.w}" height="${z.h}" rx="14" fill="${z.color}" fill-opacity=".13" stroke="${z.color}" stroke-width="2" stroke-dasharray="8 6"/><text class="ztitle" x="${z.x+14}" y="${z.y+27}">${esc(z.title||'Zona')}</text></g>`;
+  });
+  b.arrows.forEach(a=>{
+    const f=b.notes.find(n=>n.id===a.from),t=b.notes.find(n=>n.id===a.to);if(!f||!t)return;
+    const p1=edgePt(f,t.x+t.w/2,t.y+t.h/2),p2=edgePt(t,f.x+f.w/2,f.y+f.h/2);
+    h+=`<g data-kind="arrow" data-id="${a.id}"><line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="transparent" stroke-width="22"/><line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" style="stroke:var(--muted)" stroke-width="2.5" marker-end="url(#arh)"/></g>`;
+  });
+  b.notes.forEach(n=>{
+    const hot=connectFrom===n.id;
+    h+=`<g data-kind="note" data-id="${n.id}"><rect x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="10" fill="${n.color}" stroke="${hot?'#ff6b5b':'rgba(0,0,0,.22)'}" stroke-width="${hot?4:1}"/><foreignObject x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}"><div xmlns="http://www.w3.org/1999/xhtml" class="ntxt">${n.text?esc(n.text):'<span style="opacity:.45">Nota vacía</span>'}</div></foreignObject>${n.taskId?`<text x="${n.x+n.w-24}" y="${n.y+20}" font-size="14">✅</text>`:''}<g data-kind="nhandle" data-id="${n.id}" transform="translate(${n.x+n.w-24},${n.y+n.h-24})"><rect width="24" height="24" fill="transparent"/><path d="M8 21 L21 8 M14 21 L21 14" stroke="#221c14" stroke-opacity=".45" stroke-width="2.5" stroke-linecap="round"/></g></g>`;
+  });
+  /* asas de las zonas al final: siempre quedan por encima de las notas y se pueden agarrar */
+  b.zones.forEach(z=>{
+    h+=`<g data-kind="zhandle" data-id="${z.id}" transform="translate(${z.x+z.w-24},${z.y+z.h-24})"><rect width="24" height="24" fill="transparent"/><path d="M8 21 L21 8 M14 21 L21 14" stroke="${z.color}" stroke-width="3" stroke-linecap="round"/></g>`;
+  });
+  g.innerHTML=h;
+}
+function initBoard(){
+  const svg=$('#bsvg');if(!svg)return;
+  svg.addEventListener('pointerdown',bDown);svg.addEventListener('pointermove',bMove);
+  svg.addEventListener('pointerup',bUp);svg.addEventListener('pointercancel',bUp);
+  svg.addEventListener('wheel',bWheel,{passive:false});
+  B.ptrs.clear();B.mode=null;
+  if(bv(view.clientId).fresh)fitBoard();else drawBoard();
+  updateHint();
+}
+function updateHint(){const h=$('#bhint');if(h)h.classList.toggle('on',!!connectFrom)}
+function toggleFull(){view.boardFull=!view.boardFull;bv(view.clientId).fresh=true;render()}
+function ptr(e){const r=e.currentTarget.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+function bDown(e){
+  const svg=e.currentTarget;
+  try{svg.setPointerCapture(e.pointerId)}catch(_){}
+  B.ptrs.set(e.pointerId,ptr(e));
+  if(B.ptrs.size===2){startPinch();return}
+  if(B.ptrs.size>2)return;
+  const el=e.target.closest?e.target.closest('[data-kind]'):null;
+  const p=B.ptrs.get(e.pointerId);B.sx=p.x;B.sy=p.y;B.moved=false;B.carry=null;
+  const b=getBoard(view.clientId),v=bv(view.clientId);
+  B.kind=el?el.dataset.kind:'bg';B.id=el?el.dataset.id:null;
+  if(B.kind==='note'){const n=b.notes.find(x=>x.id===B.id);B.orig={x:n.x,y:n.y};B.mode='drag'}
+  else if(B.kind==='zone'){
+    const z=b.zones.find(x=>x.id===B.id);B.orig={x:z.x,y:z.y};
+    B.carry=b.notes.filter(n=>{const cx=n.x+n.w/2,cy=n.y+n.h/2;return cx>=z.x&&cx<=z.x+z.w&&cy>=z.y&&cy<=z.y+z.h}).map(n=>({id:n.id,x:n.x,y:n.y}));
+    B.mode='drag';
+  }
+  else if(B.kind==='nhandle'){const n=b.notes.find(x=>x.id===B.id);B.orig={w:n.w,h:n.h};B.mode='resize'}
+  else if(B.kind==='zhandle'){const z=b.zones.find(x=>x.id===B.id);B.orig={w:z.w,h:z.h};B.mode='resize'}
+  else if(B.kind==='arrow'){B.mode='tap'}
+  else{B.mode='pan';B.v0={x:v.x,y:v.y}}
+}
+function startPinch(){
+  const pts=[...B.ptrs.values()];const v=bv(view.clientId);
+  const cx=(pts[0].x+pts[1].x)/2,cy=(pts[0].y+pts[1].y)/2;
+  B.mode='pinch';B.moved=true;
+  B.pinch={d0:Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y)||1,k0:v.k,wx:(cx-v.x)/v.k,wy:(cy-v.y)/v.k};
+}
+function bMove(e){
+  if(!B.ptrs.has(e.pointerId))return;
+  const p=ptr(e);B.ptrs.set(e.pointerId,p);
+  const cid=view.clientId,v=bv(cid),b=getBoard(cid);
+  if(B.mode==='pinch'){
+    const pts=[...B.ptrs.values()];if(pts.length<2)return;
+    const cx=(pts[0].x+pts[1].x)/2,cy=(pts[0].y+pts[1].y)/2,d=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);
+    v.k=clamp(B.pinch.k0*d/B.pinch.d0,.15,3);v.x=cx-B.pinch.wx*v.k;v.y=cy-B.pinch.wy*v.k;drawBoard();return;
+  }
+  if(!B.mode)return;
+  const dx=p.x-B.sx,dy=p.y-B.sy;
+  if(!B.moved&&Math.hypot(dx,dy)<6)return;
+  B.moved=true;
+  if(B.mode==='pan'){v.x=B.v0.x+dx;v.y=B.v0.y+dy}
+  else if(B.mode==='drag'){
+    const wx=dx/v.k,wy=dy/v.k;
+    if(B.kind==='note'){const n=b.notes.find(x=>x.id===B.id);n.x=snap(B.orig.x+wx);n.y=snap(B.orig.y+wy)}
+    else{const z=b.zones.find(x=>x.id===B.id);const zx=snap(B.orig.x+wx),zy=snap(B.orig.y+wy);const ddx=zx-B.orig.x,ddy=zy-B.orig.y;z.x=zx;z.y=zy;
+      B.carry.forEach(c=>{const n=b.notes.find(x=>x.id===c.id);if(n){n.x=c.x+ddx;n.y=c.y+ddy}})}
+  }
+  else if(B.mode==='resize'){
+    const obj=(B.kind==='nhandle'?b.notes:b.zones).find(x=>x.id===B.id);
+    const minW=B.kind==='nhandle'?110:160,minH=B.kind==='nhandle'?60:100;
+    obj.w=Math.max(minW,snap(B.orig.w+dx/v.k));obj.h=Math.max(minH,snap(B.orig.h+dy/v.k));
+  }
+  drawBoard();
+}
+function bUp(e){
+  B.ptrs.delete(e.pointerId);
+  if(B.mode==='pinch'){if(B.ptrs.size<2){B.mode=null;B.pinch=null}return}
+  const mode=B.mode,moved=B.moved;B.mode=null;
+  if(!mode)return;
+  if((mode==='drag'||mode==='resize')&&moved){saveQuiet();return}
+  if(moved)return;
+  if(mode==='drag'){
+    if(B.kind==='note'){
+      if(connectFrom){
+        if(connectFrom!==B.id){
+          const b=getBoard(view.clientId);
+          if(!b.arrows.some(a=>a.from===connectFrom&&a.to===B.id))b.arrows.push({id:uid(),from:connectFrom,to:B.id});
+          saveQuiet();toast('Flecha creada');
+        }
+        connectFrom=null;updateHint();drawBoard();
+      }else openNote(B.id);
+    }else if(B.kind==='zone'){if(!connectFrom)openZone(B.id)}
+  }else if(mode==='tap'){
+    if(confirm('¿Eliminar esta flecha?')){const b=getBoard(view.clientId);b.arrows=b.arrows.filter(a=>a.id!==B.id);saveQuiet();drawBoard()}
+  }
+}
+function bWheel(e){
+  e.preventDefault();
+  const v=bv(view.clientId);const r=e.currentTarget.getBoundingClientRect();
+  const sx=e.clientX-r.left,sy=e.clientY-r.top;
+  const wx=(sx-v.x)/v.k,wy=(sy-v.y)/v.k;
+  v.k=clamp(v.k*(e.deltaY<0?1.1:.9),.15,3);v.x=sx-wx*v.k;v.y=sy-wy*v.k;drawBoard();
+}
+
+/* Notas */
+let noteColor=NOTE_COLORS[0],zoneColor=COLORS[0];
+function newNote(){
+  const b=getBoard(view.clientId);const c=centerWorld();const off=(b.notes.length%5)*14;
+  const n={id:uid(),x:snap(c.x-90+off),y:snap(c.y-50+off),w:180,h:100,text:'',color:NOTE_COLORS[b.notes.length%NOTE_COLORS.length]};
+  b.notes.push(n);saveQuiet();drawBoard();openNote(n.id,true);
+}
+function openNote(id,isNew){
+  const b=getBoard(view.clientId);const n=b.notes.find(x=>x.id===id);if(!n)return;
+  noteColor=n.color;
+  openSheet(`<h3>${isNew?'Nueva nota':'Nota'}</h3>
+    <div class="field"><textarea id="nText" placeholder="Escribí la idea…" style="min-height:110px">${esc(n.text)}</textarea></div>
+    <div class="field"><label>Color</label><div class="swatches" id="nsw">${NOTE_COLORS.map(k=>`<button style="background:${k}" class="${k===n.color?'on':''}" onclick="pickNoteColor('${k}')"></button>`).join('')}</div></div>
+    <div class="actions" style="margin-top:6px"><button class="btn sm ghost" onclick="noteToTask('${id}')">→ Tarea</button><button class="btn sm ghost" onclick="startConnect('${id}')">🔗 Conectar</button><button class="btn sm ghost" onclick="dupNote('${id}')">⎘ Duplicar</button></div>
+    <div class="actions"><button class="btn danger" onclick="delNote('${id}')">Eliminar</button><span class="sp"></span><button class="btn primary" onclick="saveNote('${id}')">Listo</button></div>`);
+  setTimeout(()=>{const t=$('#nText');if(t)t.focus()},80);
+}
+function pickNoteColor(k){noteColor=k;document.querySelectorAll('#nsw button').forEach(x=>x.classList.toggle('on',x.getAttribute('onclick').includes(k)))}
+function saveNote(id){
+  const n=getBoard(view.clientId).notes.find(x=>x.id===id);if(!n)return;
+  n.text=$('#nText').value.trim();n.color=noteColor;
+  saveQuiet();closeSheet();drawBoard();
+}
+function delNote(id){
+  const b=getBoard(view.clientId);const n=b.notes.find(x=>x.id===id);
+  if(n&&n.text&&!confirm('¿Eliminar esta nota?'))return;
+  b.notes=b.notes.filter(x=>x.id!==id);b.arrows=b.arrows.filter(a=>a.from!==id&&a.to!==id);
+  saveQuiet();closeSheet();drawBoard();
+}
+function dupNote(id){
+  const b=getBoard(view.clientId);const n=b.notes.find(x=>x.id===id);if(!n)return;
+  b.notes.push({...n,id:uid(),x:n.x+30,y:n.y+30,text:$('#nText')?$('#nText').value.trim():n.text,color:noteColor,taskId:''});
+  saveQuiet();closeSheet();drawBoard();toast('Nota duplicada');
+}
+function startConnect(id){
+  const n=getBoard(view.clientId).notes.find(x=>x.id===id);if(n){n.text=$('#nText').value.trim();n.color=noteColor;saveQuiet()}
+  connectFrom=id;closeSheet();updateHint();drawBoard();
+}
+function cancelConnect(){connectFrom=null;updateHint();drawBoard()}
+function noteToTask(id){
+  const n=getBoard(view.clientId).notes.find(x=>x.id===id);if(!n)return;
+  const text=($('#nText')?$('#nText').value:n.text).trim();
+  if(!text){toast('Escribí algo en la nota primero');return}
+  n.text=text;n.color=noteColor;saveQuiet();
+  const first=text.split('\n')[0];
+  openTask(null,{title:first.length>140?first.slice(0,140)+'…':first,clientId:view.clientId,notes:(text!==first||first.length>140)?text:'',fromNote:id});
+}
+
+/* Zonas */
+function newZone(){
+  const b=getBoard(view.clientId);const c=centerWorld();
+  const z={id:uid(),x:snap(c.x-160),y:snap(c.y-110),w:320,h:220,title:'',color:COLORS[b.zones.length%COLORS.length]};
+  b.zones.push(z);saveQuiet();drawBoard();openZone(z.id,true);
+}
+function openZone(id,isNew){
+  const z=getBoard(view.clientId).zones.find(x=>x.id===id);if(!z)return;
+  zoneColor=z.color;
+  openSheet(`<h3>${isNew?'Nueva zona':'Zona'}</h3>
+    <div class="field"><label>Título</label><input type="text" id="zTitle" value="${esc(z.title)}" placeholder="Ej: Objetivos, Contenido, Pauta"></div>
+    <div class="field"><label>Color</label><div class="swatches" id="zsw">${COLORS.map(k=>`<button style="background:${k}" class="${k===z.color?'on':''}" onclick="pickZoneColor('${k}')"></button>`).join('')}</div></div>
+    <p class="muted" style="font-size:12px;margin:0">Arrastrá la zona desde un espacio vacío para moverla junto con sus notas. Tirá de la esquina inferior derecha para cambiar el tamaño.</p>
+    <div class="actions"><button class="btn danger" onclick="delZone('${id}')">Eliminar zona</button><span class="sp"></span><button class="btn primary" onclick="saveZone('${id}')">Listo</button></div>`);
+  setTimeout(()=>{const t=$('#zTitle');if(t)t.focus()},80);
+}
+function pickZoneColor(k){zoneColor=k;document.querySelectorAll('#zsw button').forEach(x=>x.classList.toggle('on',x.getAttribute('onclick').includes(k)))}
+function saveZone(id){const z=getBoard(view.clientId).zones.find(x=>x.id===id);if(!z)return;z.title=$('#zTitle').value.trim();z.color=zoneColor;saveQuiet();closeSheet();drawBoard()}
+function delZone(id){const b=getBoard(view.clientId);b.zones=b.zones.filter(x=>x.id!==id);saveQuiet();closeSheet();drawBoard();toast('Zona eliminada (las notas se quedan)')}
+
+/* Plantillas de pizarra: zonas [x,y,w,h,título,color] · notas [x,y,texto,colorNota] */
+const BOARD_TPL={
+  embudo:{ico:'🔻',name:'Embudo de ventas',desc:'Atracción, interés, decisión y fidelización',
+    zones:[[0,0,640,180,'Atracción · descubren la marca',3],[60,200,520,180,'Interés · consideran opciones',2],[120,400,400,180,'Decisión · compran o agendan',0],[180,600,280,180,'Fidelización · repiten y recomiendan',4]],
+    notes:[[20,50,'¿Qué contenido los atrae? (reels, alcance)',0],[230,50,'¿Dónde los encontramos? (Instagram, Meta Ads, Google)',3],[440,50,'Gancho principal de la marca',1],
+      [80,250,'¿Qué dudas tienen antes de comprar?',0],[290,250,'Contenido que genera confianza (casos, testimonios)',2],
+      [135,450,'Oferta y llamado a la acción',0],[335,450,'Cómo agendan o compran (WhatsApp, formulario)',3],
+      [230,650,'¿Cómo los hacemos volver y recomendar?',4]]},
+  contenido:{ico:'🧱',name:'Mapa de contenido',desc:'Cuatro pilares con ideas, formatos y frecuencia',
+    zones:[[0,0,250,430,'Pilar 1 · Educar',2],[270,0,250,430,'Pilar 2 · Inspirar',4],[540,0,250,430,'Pilar 3 · Vender',1],[810,0,250,430,'Pilar 4 · Conectar',3]],
+    notes:[[35,50,'Tips, tutoriales, mitos y verdades',2],[35,170,'Formatos: reel · carrusel · historia',0],[35,290,'Frecuencia por semana',5],
+      [305,50,'Historias, resultados, detrás de cámaras',4],[305,170,'Formatos: reel · carrusel · historia',0],[305,290,'Frecuencia por semana',5],
+      [575,50,'Ofertas, casos de éxito, testimonios',1],[575,170,'Formatos: reel · carrusel · historia',0],[575,290,'Frecuencia por semana',5],
+      [845,50,'Preguntas, encuestas, humor, comunidad',3],[845,170,'Formatos: reel · carrusel · historia',0],[845,290,'Frecuencia por semana',5]]},
+  editorial:{ico:'🗓️',name:'Calendario editorial',desc:'Cuatro semanas con tres publicaciones cada una',
+    zones:[[0,0,240,400,'Semana 1',0],[260,0,240,400,'Semana 2',3],[520,0,240,400,'Semana 3',2],[780,0,240,400,'Semana 4',4]],
+    notes:[[30,50,'Lun · Reel',0],[30,165,'Mié · Carrusel',3],[30,280,'Vie · Historia',2],
+      [290,50,'Lun · Reel',0],[290,165,'Mié · Carrusel',3],[290,280,'Vie · Historia',2],
+      [550,50,'Lun · Reel',0],[550,165,'Mié · Carrusel',3],[550,280,'Vie · Historia',2],
+      [810,50,'Lun · Reel',0],[810,165,'Mié · Carrusel',3],[810,280,'Vie · Historia',2]]},
+  foda:{ico:'🧭',name:'FODA',desc:'Fortalezas, oportunidades, debilidades y amenazas',
+    zones:[[0,0,340,260,'Fortalezas (internas)',2],[360,0,340,260,'Oportunidades (externas)',3],[0,280,340,260,'Debilidades (internas)',7],[360,280,340,260,'Amenazas (externas)',1]],
+    notes:[[80,70,'¿Qué hacemos mejor que nadie?',2],[440,70,'¿Qué tendencias o vacíos del mercado podemos aprovechar?',3],[80,350,'¿Qué nos falta o debemos mejorar?',5],[440,350,'¿Qué competencia o cambios nos afectan?',1]]}
+};
+function openBoardTpl(){
+  openSheet(`<h3>🧩 Plantillas de pizarra</h3>
+    <p class="muted" style="font-size:13px;margin:-6px 0 12px">Se agregan al lienzo actual, debajo de lo que ya tengas.</p>
+    ${Object.entries(BOARD_TPL).map(([k,t])=>`<div class="tplopt" onclick="addBoardTpl('${k}')"><b>${t.ico} ${t.name}</b><div class="muted" style="font-size:12px;margin-top:3px">${t.desc}</div></div>`).join('')}
+    <div class="actions"><button class="btn ghost" onclick="closeSheet()">Cancelar</button></div>`);
+}
+function addBoardTpl(k){
+  const tpl=BOARD_TPL[k];const b=getBoard(view.clientId);const bb=boardBounds(b);
+  const ox=bb?bb.x1:0,oy=bb?bb.y2+80:0;
+  tpl.zones.forEach(([x,y,w,h,title,ci])=>b.zones.push({id:uid(),x:x+ox,y:y+oy,w,h,title,color:COLORS[ci%COLORS.length]}));
+  tpl.notes.forEach(([x,y,text,ci])=>b.notes.push({id:uid(),x:x+ox,y:y+oy,w:180,h:100,text,color:NOTE_COLORS[ci%NOTE_COLORS.length]}));
+  saveQuiet();closeSheet();fitBoard();toast(`${tpl.name} agregado`);
+}
 
 /* ============ Inicio ============ */
 render();pull();
