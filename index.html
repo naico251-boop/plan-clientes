@@ -132,7 +132,10 @@ nav.bottom .spacer{flex:0 0 76px}
 .overlay.open{display:flex}
 .sheet{background:var(--surface);width:100%;max-width:600px;max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom));box-shadow:var(--shadow)}
 @media (min-width:700px){.overlay{align-items:center}.sheet{border-radius:20px}}
-.sheet h3{margin:0 0 14px;font-size:18px}
+.sheet h3{margin:0 0 14px;font-size:18px;padding-right:34px}
+.sheet{position:relative}
+.xbtn{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;border:0;background:var(--surface2,rgba(127,127,127,.18));color:var(--text,inherit);font-size:16px;line-height:1;cursor:pointer;z-index:2}
+.bk{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;margin-top:8px}
 .field{margin-bottom:12px}
 .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px;font-weight:600}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -215,7 +218,7 @@ pre.sql{background:var(--surface2);border-radius:10px;padding:12px;font-size:12p
   <button data-v="ajustes" onclick="go('ajustes')"><span class="ic">⚙️</span>Ajustes</button>
 </div></nav>
 
-<div class="overlay" id="overlay" onclick="if(event.target===this)closeSheet()"><div class="sheet" id="sheet"></div></div>
+<div class="overlay" id="overlay"><div class="sheet" id="sheet"></div></div>
 <div class="toast" id="toast"></div>
 <input type="file" id="importFile" accept="application/json" hidden onchange="importJSON(this)">
 
@@ -240,10 +243,105 @@ function loadLocal(){
   try{const d=JSON.parse(lsGet(LS_KEY));if(d&&d.clients)return fix(d)}catch(e){}
   return {clients:[],tasks:[],ideas:[],boards:{},savedAt:0};
 }
-function fix(d){d.clients=d.clients||[];d.tasks=d.tasks||[];d.ideas=d.ideas||[];d.boards=d.boards||{};return d}
+function fix(d){d.clients=d.clients||[];d.tasks=d.tasks||[];d.ideas=d.ideas||[];d.boards=d.boards||{};d.tomb=d.tomb||{};return d}
 function persistLocal(){lsSet(LS_KEY,JSON.stringify(S))}
-function save(){S.savedAt=Date.now();persistLocal();schedulePush();render()}
-function saveQuiet(){S.savedAt=Date.now();persistLocal();schedulePush()}
+function save(){stamp();S.savedAt=Date.now();persistLocal();schedulePush();render()}
+function saveQuiet(){stamp();S.savedAt=Date.now();persistLocal();schedulePush()}
+
+/* ---- Fusión por elemento (V2.1) ----
+   Cada cliente, tarea, idea, nota, zona y flecha lleva su propia marca de tiempo (_u).
+   Los borrados se guardan como "lápidas" en S.tomb. Al sincronizar se juntan los dos lados:
+   gana la versión más reciente de CADA elemento, nunca se reemplaza todo el documento. */
+let HASH=new Map(), clockOffset=0, lastTs=0;
+function nowTs(){lastTs=Math.max(Date.now()+clockOffset,lastTs+1);return lastTs}
+function itemMap(st){
+  const m=new Map();
+  st.clients.forEach(x=>m.set('c:'+x.id,x));
+  st.tasks.forEach(x=>m.set('t:'+x.id,x));
+  st.ideas.forEach(x=>m.set('i:'+x.id,x));
+  for(const cid in st.boards){const b=st.boards[cid]||{};
+    (b.notes||[]).forEach(x=>m.set('n:'+cid+':'+x.id,x));
+    (b.zones||[]).forEach(x=>m.set('z:'+cid+':'+x.id,x));
+    (b.arrows||[]).forEach(x=>m.set('a:'+cid+':'+x.id,x));}
+  return m;
+}
+function canon(v){
+  if(v===null||typeof v!=='object')return JSON.stringify(v)+'';
+  if(Array.isArray(v))return'['+v.map(canon).join(',')+']';
+  return'{'+Object.keys(v).filter(k=>k!=='_u'&&v[k]!==undefined).sort().map(k=>JSON.stringify(k)+':'+canon(v[k])).join(',')+'}';
+}
+function rehash(){HASH=new Map();for(const[k,v]of itemMap(S))HASH.set(k,canon(v))}
+function stamp(){
+  S.tomb=S.tomb||{};const now=nowTs(),m=itemMap(S);
+  for(const[k,v]of m){const h=canon(v);if(HASH.get(k)!==h){v._u=now;HASH.set(k,h);delete S.tomb[k]}}
+  for(const k of [...HASH.keys()])if(!m.has(k)){S.tomb[k]=now;HASH.delete(k)}
+}
+function isEmpty(st){return itemMap(st).size===0}
+function counts(st){return{c:st.clients.length,t:st.tasks.length,i:st.ideas.length}}
+function sig(st){
+  const parts=[];for(const[k,v]of itemMap(st))parts.push(k+'@'+(v._u||0)+'='+canon(v));
+  parts.sort();
+  return parts.join('|')+'#'+Object.keys(st.tomb||{}).sort().map(k=>k+'@'+st.tomb[k]).join('|');
+}
+function mergeStates(L,R){
+  const lm=itemMap(L),rm=itemMap(R),lt=L.tomb||{},rt=R.tomb||{};
+  const keys=new Set([...lm.keys(),...rm.keys(),...Object.keys(lt),...Object.keys(rt)]);
+  const out=new Map(),tomb={},old=Date.now()-60*864e5,now=nowTs();
+  for(const k of keys){
+    const a=lm.get(k),b=rm.get(k),ts=Math.max(lt[k]||0,rt[k]||0);
+    const item=(a&&b)?((b._u||0)>(a._u||0)?b:a):(a||b||null);
+    if(item&&ts&&ts>=(item._u||0)){tomb[k]=ts;continue}
+    if(item)out.set(k,item);else if(ts&&ts>old)tomb[k]=ts;
+  }
+  const cl=new Set();for(const k of out.keys())if(k.startsWith('c:'))cl.add(k.slice(2));
+  for(const k of [...out.keys()]){
+    const p=k.split(':'),kind=p[0],it=out.get(k);
+    if(kind==='t'&&!cl.has(it.clientId)){out.delete(k);tomb[k]=now}
+    else if((kind==='n'||kind==='z'||kind==='a')&&!cl.has(p[1])){out.delete(k);tomb[k]=now}
+    else if(kind==='i'&&it.clientId&&!cl.has(it.clientId)){it.clientId='';it._u=now}
+  }
+  for(const k of [...out.keys()])if(k.startsWith('a:')){
+    const a=out.get(k),c=k.split(':')[1];
+    if(!out.has('n:'+c+':'+a.from)||!out.has('n:'+c+':'+a.to)){out.delete(k);tomb[k]=now}
+  }
+  const st={clients:[],tasks:[],ideas:[],boards:{},tomb,savedAt:Date.now()};
+  for(const[k,v]of out){
+    const p=k.split(':'),kind=p[0];
+    if(kind==='c')st.clients.push(v);else if(kind==='t')st.tasks.push(v);else if(kind==='i')st.ideas.push(v);
+    else{const b=st.boards[p[1]]||(st.boards[p[1]]={notes:[],zones:[],arrows:[]});(kind==='n'?b.notes:kind==='z'?b.zones:b.arrows).push(v)}
+  }
+  return st;
+}
+function applyLocal(m,push){
+  S=fix(m);rehash();persistLocal();
+  if(view.name==='cliente'&&!clientById(view.clientId))view={...view,name:'clientes'};
+  if(push)schedulePush();
+  render();
+}
+
+/* ---- Copias locales (las últimas 5) ---- */
+const BK_KEY='lb_plan_clientes_bk';
+function getBk(){try{return JSON.parse(lsGet(BK_KEY)||'[]')}catch(e){return[]}}
+function backup(why,force){
+  if(isEmpty(S))return;
+  const bk=getBk();
+  if(!force&&bk[0]&&Date.now()-bk[0].t<3*60*1000)return;
+  bk.unshift({t:Date.now(),why,c:S.clients.length,k:S.tasks.length,i:S.ideas.length,d:JSON.stringify(S)});
+  lsSet(BK_KEY,JSON.stringify(bk.slice(0,5)));
+}
+/* Suma los datos de un archivo/copia a los actuales (no borra nada) */
+function absorb(d,why){
+  d=fix(JSON.parse(JSON.stringify(d)));d.tomb={};const now=nowTs();
+  for(const v of itemMap(d).values())v._u=now;
+  stamp();backup(why,true);
+  applyLocal(mergeStates(S,d),true);
+}
+function restoreBk(i){
+  const b=getBk()[i];if(!b)return;
+  if(!confirm('Se sumarán a lo que tenés ahora los clientes, tareas e ideas de esta copia (no se borra nada). ¿Continuar?'))return;
+  try{absorb(JSON.parse(b.d),'antes de restaurar');toast('Copia restaurada')}catch(e){toast('No se pudo restaurar')}
+}
+rehash();backup('al abrir');
 
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const $=s=>document.querySelector(s);
@@ -277,32 +375,57 @@ function sbReady(){return !!(cfg.url&&cfg.key)}
 function sbHeaders(){return{apikey:cfg.key,Authorization:'Bearer '+cfg.key,'Content-Type':'application/json'}}
 function setSync(s,msg=''){syncState={s,msg};renderTop()}
 let pushTimer=null;
-function schedulePush(){if(!sbReady())return;clearTimeout(pushTimer);setSync('sync');pushTimer=setTimeout(push,1200)}
-async function push(){
-  if(!sbReady())return;
-  try{
-    const r=await fetch(`${cfg.url}/rest/v1/${TABLE}`,{method:'POST',
-      headers:{...sbHeaders(),Prefer:'resolution=merge-duplicates,return=minimal'},
-      body:JSON.stringify([{id:ROW_ID,data:S,updated_at:new Date().toISOString()}])});
-    if(!r.ok)throw new Error('Error '+r.status+' '+(await r.text()).slice(0,120));
-    setSync('ok');
-  }catch(e){setSync('err',e.message)}
+let syncing=false,syncAgain=false,deferT=null,pendingDefer=false,syncInfo={last:0,remote:null};
+function busy(){const a=document.activeElement;return !!(B.mode||$('#overlay').classList.contains('open')||(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)))}
+function deferSync(){pendingDefer=true;clearTimeout(deferT);deferT=setTimeout(()=>sync(false),3000)}
+async function sbGet(){
+  const r=await fetch(`${cfg.url}/rest/v1/${TABLE}?id=eq.${ROW_ID}&select=data,updated_at`,{headers:sbHeaders(),cache:'no-store'});
+  if(!r.ok)throw new Error('Error '+r.status+' '+(await r.text()).slice(0,120));
+  const d=r.headers.get('date');if(d){const t=Date.parse(d);if(t){const off=t-Date.now();clockOffset=Math.abs(off)>5000?off:0}}
+  const rows=await r.json();return rows[0]||null;
 }
-async function pull(){
+async function sbWrite(st,row){
+  const iso=new Date(nowTs()).toISOString();
+  if(row){
+    const r=await fetch(`${cfg.url}/rest/v1/${TABLE}?id=eq.${ROW_ID}&updated_at=eq.${encodeURIComponent(row.updated_at)}`,
+      {method:'PATCH',headers:{...sbHeaders(),Prefer:'return=representation'},body:JSON.stringify({data:st,updated_at:iso})});
+    if(!r.ok)throw new Error('Error '+r.status+' '+(await r.text()).slice(0,120));
+    const rows=await r.json();return rows.length>0;
+  }
+  const r=await fetch(`${cfg.url}/rest/v1/${TABLE}`,{method:'POST',headers:{...sbHeaders(),Prefer:'return=minimal'},body:JSON.stringify([{id:ROW_ID,data:st,updated_at:iso}])});
+  if(r.status===409)return false;
+  if(!r.ok)throw new Error('Error '+r.status+' '+(await r.text()).slice(0,120));
+  return true;
+}
+/* Leer nube -> juntar con lo local -> escribir solo si la nube no cambió mientras tanto */
+async function sync(force){
   if(!sbReady()){setSync('local');return}
-  setSync('sync');
+  if(syncing){syncAgain=true;return}
+  syncing=true;pendingDefer=false;setSync('sync');
   try{
-    const r=await fetch(`${cfg.url}/rest/v1/${TABLE}?id=eq.${ROW_ID}&select=data`,{headers:sbHeaders()});
-    if(!r.ok)throw new Error('Error '+r.status+' '+(await r.text()).slice(0,120));
-    const rows=await r.json();
-    const remote=rows[0]&&rows[0].data;
-    if(remote&&(remote.savedAt||0)>(S.savedAt||0)){S=fix(remote);persistLocal();render();setSync('ok')}
-    else if(!remote||(S.savedAt||0)>(remote.savedAt||0)){await push()}
-    else setSync('ok');
+    let ok=false;
+    for(let n=0;n<5&&!ok;n++){
+      const row=await sbGet();
+      stamp();
+      const remote=row&&row.data?fix(row.data):null;
+      if(!remote&&isEmpty(S)){syncInfo={last:Date.now(),remote:{c:0,t:0,i:0}};ok=true;break}   // un equipo vacío nunca crea ni pisa la nube
+      const merged=remote?mergeStates(S,remote):S;
+      const changed=!!remote&&sig(merged)!==sig(S);
+      if(changed&&!force&&busy()){deferSync();return}
+      if(changed){backup('antes de sincronizar');applyLocal(merged,false)}
+      if(!remote||sig(merged)!==sig(remote)){if(!(await sbWrite(merged,row)))continue}
+      syncInfo={last:Date.now(),remote:counts(merged)};ok=true;
+    }
+    if(ok)setSync('ok');else{setSync('err','Cambios simultáneos: se reintenta solo');deferSync()}
   }catch(e){setSync('err',e.message)}
+  finally{syncing=false;if(syncAgain){syncAgain=false;setTimeout(()=>sync(false),300)}}
 }
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')pull()});
-setInterval(()=>{if(document.visibilityState==='visible'&&syncState.s!=='sync'&&!B.mode)pull()},60000);
+function pull(force){return sync(force)}
+function schedulePush(){if(!sbReady())return;clearTimeout(pushTimer);setSync('sync');pushTimer=setTimeout(()=>sync(false),1200)}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')sync(false)});
+window.addEventListener('online',()=>sync(false));
+document.addEventListener('focusout',()=>{setTimeout(()=>{if(pendingDefer&&!busy())sync(false)},400)});
+setInterval(()=>{if(document.visibilityState==='visible'&&!syncing)sync(false)},30000);
 
 /* ============ Navegación ============ */
 function go(name,extra={}){view={...view,name,boardFull:false,...extra};connectFrom=null;window.scrollTo(0,0);render()}
@@ -612,25 +735,34 @@ alter table plan_clientes_estado enable row level security;
 create policy "plan_clientes_anon" on plan_clientes_estado
   for all to anon using (true) with check (true);`;
 function viewAjustes(){
-  return `<div class="set"><h3>☁️ Sincronización con Supabase</h3>
+  const me=counts(S),rm=syncInfo.remote;
+  const hh=syncInfo.last?new Date(syncInfo.last).toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}):'';
+  const bks=getBk();
+  return `<div class="set"><h3>📊 Estado de los datos</h3>
+    <p><b>Este equipo:</b> ${me.c} clientes · ${me.t} tareas · ${me.i} ideas<br>
+    <b>Nube:</b> ${!sbReady()?'sin conectar':rm?`${rm.c} clientes · ${rm.t} tareas · ${rm.i} ideas`:'todavía no se ha leído'}${hh?`<br>Última sincronización: ${hh}`:''}</p>
+    ${syncState.s==='err'?`<p style="color:var(--red)"><b>Problema:</b> ${esc(syncState.msg)}</p>`:''}</div>
+  <div class="set"><h3>☁️ Sincronización con Supabase</h3>
     <p>Así ves lo mismo en el celular y en el computador. Sin esto, los datos quedan solo en este dispositivo.</p>
     <div class="field"><label>URL del proyecto</label><input type="url" id="cfgUrl" value="${esc(cfg.url||'https://komlqdnxndacimlrdxhq.supabase.co')}"></div>
     <div class="field"><label>Anon key (pública)</label><input type="password" id="cfgKey" value="${esc(cfg.key||'')}" placeholder="eyJhbGciOi…"></div>
-    <div class="actions" style="margin-top:4px"><button class="btn primary" onclick="saveCfg()">Guardar y conectar</button>${sbReady()?`<button class="btn ghost" onclick="pull()">Sincronizar ahora</button><button class="btn danger" onclick="clearCfg()">Desconectar</button>`:''}</div>
+    <div class="actions" style="margin-top:4px"><button class="btn primary" onclick="saveCfg()">Guardar y conectar</button>${sbReady()?`<button class="btn ghost" onclick="pull(true)">Sincronizar ahora</button><button class="btn danger" onclick="clearCfg()">Desconectar</button>`:''}</div>
     <p style="margin:12px 0 0;font-size:12px">Ojo: con esta clave, cualquiera que la tenga puede leer y escribir esta tabla. Usala solo para datos de trabajo tuyos.</p>
-    ${syncState.s==='err'?`<p style="color:var(--red);margin-top:10px">${esc(syncState.msg)}</p>`:''}</div>
+</div>
   <div class="set"><h3>🗄️ Tabla necesaria (una sola vez)</h3>
     <p>Pegá esto en Supabase → SQL Editor → Run. Si ya la creaste en la V1, no tenés que hacer nada.</p><pre class="sql">${esc(SQL)}</pre>
     <button class="btn sm ghost" onclick="copySQL()">Copiar SQL</button></div>
-  <div class="set"><h3>💾 Respaldo</h3><p>Descargá una copia de todo o restaurá un respaldo anterior.</p>
-    <div class="actions" style="margin-top:0"><button class="btn ghost" onclick="exportJSON()">Exportar</button><button class="btn ghost" onclick="$('#importFile').click()">Importar</button></div></div>
-  <p class="muted" style="text-align:center;font-size:12px;margin-top:20px">Plan de Clientes · La Bombilla · v2<br>${S.clients.length} clientes · ${S.tasks.length} tareas · ${S.ideas.length} ideas</p>`;
+  <div class="set"><h3>💾 Respaldo</h3><p>Descargá una copia de todo, o sumá los datos de un archivo. Importar y restaurar <b>no borran</b> nada de lo que ya tenés.</p>
+    <div class="actions" style="margin-top:0"><button class="btn ghost" onclick="exportJSON()">Exportar</button><button class="btn ghost" onclick="$('#importFile').click()">Importar</button></div>
+    <p style="margin:14px 0 0"><b>Copias automáticas en este equipo</b> (las últimas 5)</p>
+    ${bks.length?bks.map((b,i)=>`<div class="bk"><span>${new Date(b.t).toLocaleString('es-CO',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})} · ${b.c} clientes · ${b.k} tareas<br><i>${esc(b.why)}</i></span><button class="btn sm ghost" onclick="restoreBk(${i})">Restaurar</button></div>`).join(''):'<p class="muted" style="margin:6px 0 0">Todavía no hay copias.</p>'}</div>
+  <p class="muted" style="text-align:center;font-size:12px;margin-top:20px">Plan de Clientes · La Bombilla · v2.1<br>${S.clients.length} clientes · ${S.tasks.length} tareas · ${S.ideas.length} ideas</p>`;
 }
 function saveCfg(){
   let url=$('#cfgUrl').value.trim().replace(/\/+$/,'');const key=$('#cfgKey').value.trim();
   if(url&&!/^https?:\/\//.test(url))url=`https://${url}.supabase.co`;
   if(!url||!key){toast('Falta la URL o la key');return}
-  cfg={url,key};lsSet(CFG_KEY,JSON.stringify(cfg));toast('Conectando…');pull().then(()=>render());
+  cfg={url,key};lsSet(CFG_KEY,JSON.stringify(cfg));toast('Conectando…');pull(true).then(()=>render());
 }
 function clearCfg(){if(!confirm('¿Desconectar la sincronización? Los datos siguen en este equipo.'))return;cfg={};lsSet(CFG_KEY,'{}');setSync('local');render()}
 function copySQL(){navigator.clipboard?.writeText(SQL).then(()=>toast('SQL copiado'),()=>toast('No se pudo copiar'))}
@@ -640,12 +772,14 @@ function exportJSON(){
 }
 function importJSON(inp){
   const f=inp.files[0];if(!f)return;const r=new FileReader();
-  r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.clients)throw 0;if(!confirm('Esto reemplaza todos los datos actuales. ¿Continuar?'))return;S=fix(d);save();toast('Respaldo restaurado')}catch(e){toast('Archivo no válido')}inp.value=''};
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.clients))throw 0;if(!confirm('Se sumarán los datos del archivo a los que ya tenés (no se borra nada). ¿Continuar?')){inp.value='';return}absorb(d,'antes de importar');toast('Datos importados')}catch(e){toast('Archivo no válido')}inp.value=''};
   r.readAsText(f);
 }
 
 /* ============ Hojas / formularios ============ */
-function openSheet(html){$('#sheet').innerHTML=html;$('#overlay').classList.add('open')}
+function openSheet(html){$('#sheet').innerHTML=`<button class="xbtn" onclick="closeSheet()" aria-label="Cerrar">✕</button>`+html;$('#overlay').classList.add('open');$('#sheet').scrollTop=0}
+/* Tocar un botón del formulario no cierra el teclado antes del clic (evita el "primer toque perdido" en el celular) */
+document.addEventListener('mousedown',e=>{if(e.target.closest&&e.target.closest('#sheet .btn'))e.preventDefault()});
 function closeSheet(){stopRec();$('#overlay').classList.remove('open')}
 function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800)}
 function clientOptions(sel,allowNone){return (allowNone?`<option value="">— Sin cliente —</option>`:'')+activeClients().map(c=>`<option value="${c.id}" ${c.id===sel?'selected':''}>${esc(c.name)}</option>`).join('')}
@@ -678,7 +812,7 @@ function saveClient(id){
 function archiveClient(id){const c=clientById(id);c.archived=!c.archived;save();toast(c.archived?'Cliente archivado':'Cliente reactivado')}
 function deleteClient(id){
   const c=clientById(id);if(!confirm(`¿Eliminar "${c.name}" con todas sus tareas, ideas y pizarra? No se puede deshacer.`))return;
-  S.clients=S.clients.filter(x=>x.id!==id);S.tasks=S.tasks.filter(t=>t.clientId!==id);S.ideas=S.ideas.filter(i=>i.clientId!==id);delete S.boards[id];
+  backup('antes de borrar un cliente',true);S.clients=S.clients.filter(x=>x.id!==id);S.tasks=S.tasks.filter(t=>t.clientId!==id);S.ideas=S.ideas.filter(i=>i.clientId!==id);delete S.boards[id];
   view.name='clientes';save();
 }
 
